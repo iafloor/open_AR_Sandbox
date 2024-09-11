@@ -42,7 +42,7 @@ class Projector(object):
       color: #CCCCCC;
     '''
 
-    def __init__(self, calibprojector: str = None, use_panel: bool = True, p_width=1280, p_height=800,
+    def __init__(self, calibprojector: str = None, use_panel: bool = True, p_width=1920, p_height=1080,
                  show_colorbar: bool = False, position_colorbar: str = "vertical",
                  show_legend: bool = False, show_hot: bool = False,
                  show_profile: bool = False, ):
@@ -127,17 +127,18 @@ class Projector(object):
         # In this special case, a "tight" layout would actually add again white space to the plt canvas,
         # which was already cropped by specifying limits to the axis
 
-        self.figure = Figure(figsize=(self.p_frame_width / self.dpi, self.p_frame_height / self.dpi),
+        self.figure = Figure(figsize=(self.p_frame_width/self.dpi,self.p_frame_height/self.dpi),
                              dpi=self.dpi)
         self.ax = Axes(self.figure, [0., 0., 1., 1.])
         self.figure.add_axes(self.ax)
         self.ax.set_axis_off()
+
         self.ax.get_xaxis().set_visible(False)
         self.ax.get_yaxis().set_visible(False)
-
+        print("size", self.p_frame_width, self.p_frame_height)
         self.frame = pn.pane.Matplotlib(self.figure,
-                                        width=self.p_frame_width,
-                                        height=self.p_frame_height,
+                                        width=1200,
+                                        height=600,
                                         margin=(self.p_frame_top, 0, 0, self.p_frame_left),
                                         tight=False,
                                         dpi=self.dpi,
@@ -268,7 +269,6 @@ class Projector(object):
                           )
             self.legend.object = ld
             self.legend.param.trigger("object")
-
 
     def write_text(self, text: str = "cgre-aachen / open_AR_Sandbox"):
         """

@@ -75,6 +75,8 @@ class MainThread:
                           'box_dimensions': self.sensor.physical_dimensions,
                           'marker': pd.DataFrame(),
                           'cmap': plt.cm.get_cmap('gist_earth'),
+                          'color': True,
+                          'contour': True,
                           'norm': None,
                           'active_cmap': True,
                           'active_shading': True,

@@ -23,8 +23,8 @@ class DummySensor:
                - random_seed
 
         """
-
-        random_seed = kwargs.get('random_seed', 1234)
+        print("dummy is created")
+        random_seed = kwargs.get('random_seed', 1667)
         self.seed = random_seed
         numpy.random.seed(seed=self.seed)
 

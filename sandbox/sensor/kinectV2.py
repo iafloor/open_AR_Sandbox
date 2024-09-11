@@ -5,18 +5,8 @@ import os
 from sandbox import set_logger
 logger = set_logger(__name__)
 _platform = platform.system()
-try:
-    if _platform == 'Windows':
-        from pykinect2 import PyKinectV2  # Wrapper for KinectV2 Windows SDK
-        from pykinect2 import PyKinectRuntime
-    elif _platform == 'Linux':
-        os.environ["LIBFREENECT2_LOGGER_LEVEL"] = "ERROR"
-        from freenect2 import Device, FrameType
-
-
-
-except ImportError:
-    logger.warning('dependencies not found for KinectV2 to work. Check installation and try again', exc_info=True)
+from pykinect2 import PyKinectV2  # Wrapper for KinectV2 Windows SDK
+from pykinect2 import PyKinectRuntime
 
 
 class KinectV2:
@@ -88,7 +78,7 @@ class KinectV2:
         """
         Stop the thread when _platform is linux
         """
-        if self._thread_status is not 'stopped':
+        if self._thread_status != 'stopped':
             self._thread_status = 'stopped'  # set flag to end thread loop
             self._thread.join()  # wait for the thread to finish
             logger.info('Stopping frame acquisition.')
@@ -135,6 +125,7 @@ class KinectV2:
         """
         if _platform == 'Windows':
             ir_flattened = self.device.get_last_infrared_frame()
+            print(ir_flattened)
             # reshape the array to 2D with native resolution of the kinectV2
             self.ir_frame_raw = numpy.flipud(ir_flattened.reshape((self.depth_height, self.depth_width)))
         elif _platform == 'Linux':

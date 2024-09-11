@@ -4,6 +4,7 @@ from .load_save_topography import LoadSaveTopoModule
 from .topography import TopoModule
 from .prototyping import PrototypingModule
 from .search_methods import SearchMethodsModule
+from .vlakvergelijking import vlakvergelijking
 
 
 if __name__ == '__main__':

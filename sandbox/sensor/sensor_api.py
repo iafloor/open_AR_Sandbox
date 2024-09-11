@@ -11,7 +11,7 @@ class Sensor:
     """
     Wrapping API-class
     """
-    def __init__(self, calibsensor: str = None, name: str = 'kinect_v2', crop_values: bool = True,
+    def __init__(self, calibsensor: str = None, name: str = 'dummy', crop_values: bool = True,
                  clip_values: bool = True, gauss_filter: bool = True,
                  n_frames: int = 3, gauss_sigma: int = 3, invert: bool = True, **kwargs):
         """
@@ -74,6 +74,7 @@ class Sensor:
                 raise ImportError('LiDAR dependencies are not installed')
 
         elif name == 'dummy':
+            print("making a dummy")
             from .dummy import DummySensor
             self.Sensor = DummySensor(extent=self.extent, **kwargs)
         else:
@@ -102,6 +103,7 @@ class Sensor:
         """
         # collect last n frames in a stack
         depth_array = self.Sensor.get_frame()
+        print(depth_array)
         for i in range(self.n_frames - 1):
             depth_array = numpy.dstack([depth_array, self.Sensor.get_frame()])
         # calculate mean values ignoring zeros by masking them
@@ -236,6 +238,7 @@ class Sensor:
     def get_frame(self) -> numpy.ndarray:
         frame = self.get_raw_frame(self.filter)
         if self.Sensor.name == "dummy":
+            print("dummy sensor")
             self.depth = frame
             return self.depth
         if self.crop:

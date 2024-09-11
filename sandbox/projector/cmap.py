@@ -58,10 +58,19 @@ class CmapModule:
         cmap = sb_params.get('cmap')
         norm = sb_params.get('norm')
         extent = sb_params.get('extent')
+        color = sb_params.get('color')
+        print("color in cmap", color)
         self.vmin = extent[-2]
         self.vmax = extent[-1]
         set_cbar = sb_params.get("set_colorbar")
         set_cbar(self.vmin, self.vmax, cmap, norm)
+
+        if not color:
+            print("here")
+            try:
+                self.col.remove()
+            except:
+                pass
 
         if active_shade and self.relief_shading:
             if len(data.shape) > 2:  # 3 Then is an image already
@@ -75,7 +84,8 @@ class CmapModule:
             if self._col is not None and self._col() not in ax.images:
                 self.col = None
             if self.col is None:
-                self.render_frame(data, ax, vmin=self.vmin, vmax=self.vmax, extent=extent[:4])
+                if color:
+                    self.render_frame(data, ax, vmin=self.vmin, vmax=self.vmax, extent=extent[:4])
             else:
                 self.set_data(data)
                 self.set_cmap(cmap, 'k', 'k', 'k')
@@ -87,7 +97,8 @@ class CmapModule:
             if self._col is not None and self._col() not in ax.images:
                 self.col = None
             if self.col is None:
-                self.render_frame(data, ax, vmin=self.vmin, vmax=self.vmax, extent=extent[:4])
+                if color:
+                    self.render_frame(data, ax, vmin=self.vmin, vmax=self.vmax, extent=extent[:4])
             else:
                 self.set_data(data)
                 self.set_cmap(cmap, 'k', 'k', 'k')
@@ -157,11 +168,11 @@ class CmapModule:
         if vmax is None:
             vmax = self.vmax
 
+        ## hier worden de kleurtjes geprint
         self.col = ax.imshow(data, vmin=vmin, vmax=vmax,
                              cmap=self.cmap, norm=self.norm,
                              origin='lower', aspect='auto', zorder=-500, extent=extent)
         self._col = weakref.ref(self.col)
-
         ax.set_axis_off()
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
