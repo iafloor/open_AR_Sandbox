@@ -31,6 +31,7 @@ class vlakvergelijking(ModuleTemplate):
 
         # if color or contour is false, we want to not show them
         sb_params['color'] = self.color
+        sb_params['contourlines'] = self.contour
         frame = sb_params.get('frame')
         extent = sb_params.get('extent')
         ax = sb_params.get('ax')
@@ -124,7 +125,7 @@ class vlakvergelijking(ModuleTemplate):
            Returns:
                widget
            """
-        self._widget_color = pn.widgets.Checkbox(name='Show colours', value=self.color)
+        self._widget_color = pn.widgets.Checkbox(name='Show colors', value=self.color)
         self._widget_color.param.watch(self._callback_color, 'value', onlychanged=False)
 
         self._widget_contour = pn.widgets.Checkbox(name='Show contours', value=self.contour)

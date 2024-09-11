@@ -107,16 +107,18 @@ class ContourLinesModule:
             extent = sb_params.get('extent')
             self.vmin = extent[-2]
             self.vmax = extent[-1]
-            del_contour = sb_params.get('del_contour')  # making this we can now manage when to delete the contour lines
+            contourlines = sb_params.get('contourlines')  # making this we can now manage when to delete the contour lines
             # At any part of the thread. Used in GempyModule
-            if del_contour:
+            if not contourlines:
+                print("deleting the contours")
                 self.delete_contourns(ax)
-            if self.contours:
-                self.add_major_contours(frame, ax, extent[:4])
-            if self.minor_contours:
-                self.add_minor_contours(frame, ax, extent[:4])
-            if self.contours_label and self.contours:
-                self.add_label_contours(ax)
+            else:
+                if self.contours:
+                    self.add_major_contours(frame, ax, extent[:4])
+                if self.minor_contours:
+                    self.add_minor_contours(frame, ax, extent[:4])
+                if self.contours_label and self.contours:
+                    self.add_label_contours(ax)
         else:
             if self._active:
                 self.delete_contourns(ax)
