@@ -68,6 +68,7 @@ class MainThread:
             self.ARUCO_ACTIVE = True
 
         self.sb_params = {'frame': self.sensor.get_frame(),
+                          'colors': self.sensor.get_color(),
                           'ax': self.projector.ax,
                           'set_colorbar': self.projector.set_colorbar,
                           'set_legend': self.projector.set_legend,

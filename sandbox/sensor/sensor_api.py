@@ -95,6 +95,7 @@ class Sensor:
         self.crop = crop_values
         self.clip = clip_values
         self.get_frame()
+        self.get_color()
 
     def get_raw_frame(self, gauss_filter: bool = True) -> numpy.ndarray:
         """Grab a new height numpy array
@@ -103,7 +104,6 @@ class Sensor:
         """
         # collect last n frames in a stack
         depth_array = self.Sensor.get_frame()
-        print(depth_array)
         for i in range(self.n_frames - 1):
             depth_array = numpy.dstack([depth_array, self.Sensor.get_frame()])
         # calculate mean values ignoring zeros by masking them
@@ -250,6 +250,10 @@ class Sensor:
             frame = self.get_inverted_frame(frame)
         self.depth = frame
         return self.depth
+
+    def get_color(self) -> numpy.ndarray:
+        colors = self.Sensor.get_color()
+        return colors
 
     @property
     def vmax(self):

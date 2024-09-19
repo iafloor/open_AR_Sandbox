@@ -2,6 +2,7 @@ import numpy
 from scipy.spatial.distance import cdist  # for DummySensor
 from scipy.interpolate import griddata  # for DummySensor
 from sandbox import set_logger
+import random
 logger = set_logger(__name__)
 
 
@@ -23,7 +24,6 @@ class DummySensor:
                - random_seed
 
         """
-        print("dummy is created")
         random_seed = kwargs.get('random_seed', 1667)
         self.seed = random_seed
         numpy.random.seed(seed=self.seed)
@@ -69,6 +69,20 @@ class DummySensor:
         self._interpolate()
         self.depth[self.depth < 0] = 0  # TODO: Solve the problem of having negative values
         return self.depth
+
+    def get_color(self):
+        colors = numpy.empty((200, 150, 3))
+        for i in range(0,200):
+            for j in range(0,150):
+                colors[i,j] = [203,189,147]
+
+        for i in range(3):
+            id_x = random.randint(5,194)
+            id_y = random.randint(5,144)
+            for k in range(id_x-3, id_x+3):
+                for l in range(id_y-3, id_y+3):
+                    colors[k,l] = [255, 0,0]
+        return colors
 
     def _oscillating_depth(self, random):
         r = (self.depth_lim[1] - self.depth_lim[0]) / 2

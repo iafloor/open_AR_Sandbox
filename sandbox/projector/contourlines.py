@@ -10,10 +10,10 @@ class ContourLinesModule:
     dpi = 100  # make sure that figures can be displayed pixel-precise
 
     def __init__(self, contours=True, contours_step=100,
-                 contours_width=1.0, contours_color='k', contours_label=False,
+                 contours_width=1.0, contours_color='k', contours_label=True,
                  contours_label_inline=True, contours_label_fontsize=15,
                  contours_label_format='%3.0f', minor_contours=True,
-                 contours_step_minor=50, contours_width_minor=0.5,
+                 contours_step_minor=10, contours_width_minor=0.5,
                  extent=None, check_change=True, rtol=0.2, atol=0,
                  automatic_levels=False, threshold=200):
         """
@@ -136,7 +136,7 @@ class ContourLinesModule:
     def plot_contour_lines(self, frame, ax):
         self.add_major_contours(frame, ax)
         self.add_minor_contours(frame, ax)
-        self.add_label_contours(ax)
+        #self.add_label_contours(ax)
 
     def add_major_contours(self, data, ax, extent=None):
         """Renders contours to the current plot object.
