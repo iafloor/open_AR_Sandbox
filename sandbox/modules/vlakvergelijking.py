@@ -136,7 +136,7 @@ class vlakvergelijking(ModuleTemplate):
         return round(z * 8 / total - 4,1)
 
     def random_plane_parameters(self):
-        return [random.randint(-9,9)/10, random.randint(-9,9)/10, random.randint(-9,9)/10, random.randint(-9,9)/10]
+        return [random.randint(-9,9)/10, random.randint(-9,9)/10, 0, random.randint(-9,9)/10]
 
     def create_random_plane_equation(self, ax):
         equation = self.random_plane_parameters()
@@ -153,14 +153,19 @@ class vlakvergelijking(ModuleTemplate):
 
     def parameters_to_string(self, equation):
         ''' Combine the parameters to one string to be printed'''
-        result = str(round(equation[0] * 10)) + "x "
         parameters = ["x ", "y ", "z ", " "]
-        for i in range(1, 4):
-            if equation[i] < 0:
-                result = result + "- "
-            else:
-                result = result + "+ "
-            result = result + str(abs(round(equation[i] * 10))) + parameters[i]
+        id = 0
+        if equation[id] == 0:
+            id = 1
+        result = str(round(equation[id] * 10)) + parameters[id]
+
+        for i in range(id+1, 4):
+            if equation[i] != 0:
+                if equation[i] < 0:
+                    result = result + "- "
+                else:
+                    result = result + "+ "
+                result = result + str(abs(round(equation[i] * 10))) + parameters[i]
         result = result + "= 0"
         return result
 
