@@ -110,7 +110,6 @@ class ContourLinesModule:
             contourlines = sb_params.get('contourlines')  # making this we can now manage when to delete the contour lines
             # At any part of the thread. Used in GempyModule
             if not contourlines:
-                print("deleting the contours")
                 self.delete_contourns(ax)
             else:
                 if self.contours:

@@ -59,14 +59,12 @@ class CmapModule:
         norm = sb_params.get('norm')
         extent = sb_params.get('extent')
         color = sb_params.get('color')
-        print("color in cmap", color)
         self.vmin = extent[-2]
         self.vmax = extent[-1]
         set_cbar = sb_params.get("set_colorbar")
         set_cbar(self.vmin, self.vmax, cmap, norm)
 
         if not color:
-            print("here")
             try:
                 self.col.remove()
             except:

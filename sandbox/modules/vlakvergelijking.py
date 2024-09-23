@@ -90,7 +90,6 @@ class vlakvergelijking(ModuleTemplate):
 
             ## find coëfficients of plane through min max and 50,50
             translated_points = []
-            print("borders", border_x, border_y)
             for i in range(3):
                 p = np.array([self.translate_x(red_points[i][0], border_x), self.translate_y(red_points[i][1], border_y), self.translate_z(red_points[i][2], 100)])
                 translated_points.append(p)
@@ -136,7 +135,7 @@ class vlakvergelijking(ModuleTemplate):
         return round(z * 8 / total - 4,1)
 
     def random_plane_parameters(self):
-        return [random.randint(-9,9)/10, random.randint(-9,9)/10, 0, random.randint(-9,9)/10]
+        return [random.randint(-9,9)/10, random.randint(-9,9)/10, random.randint(-9,9)/10, random.randint(-9,9)/10]
 
     def create_random_plane_equation(self, ax):
         equation = self.random_plane_parameters()
@@ -192,7 +191,6 @@ class vlakvergelijking(ModuleTemplate):
                     if abs(i[0] - j[0]) < 10 and abs(i[1] - j[1]) < 10: # if closer to each other than 10 pixels, remove one
                         points[id] = []
         res = [ele for ele in points if ele != []]
-        print(res, len(res))
         return res
 
     def plane_equation(self, translated_points, ax):
