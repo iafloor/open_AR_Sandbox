@@ -10,7 +10,7 @@ class ContourLinesModule:
     dpi = 100  # make sure that figures can be displayed pixel-precise
 
     def __init__(self, contours=True, contours_step=100,
-                 contours_width=1.0, contours_color='k', contours_label=True,
+                 contours_width=1.0, contours_color='k', contours_label=False,
                  contours_label_inline=True, contours_label_fontsize=15,
                  contours_label_format='%3.0f', minor_contours=True,
                  contours_step_minor=10, contours_width_minor=0.5,

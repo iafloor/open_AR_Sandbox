@@ -66,13 +66,13 @@ class vlakvergelijking(ModuleTemplate):
         if self.axes:
             for i in range(-6,7):
                 ax.plot([border_x*(i+6)/12, border_x*(i+6)/12], [0, border_y], marker='o', color='black', linewidth=0.5)
-                self.text = ax.annotate(i, (border_x*(i+6)/12 + 2,border_y/2-5), color="black")
+                self.text = ax.annotate(-1*i, (border_x*(i+6)/12 + 2,border_y/2-5), color="black", rotation=180)
             ax.plot([border_x/2, border_x/2], [0, border_y], marker='o', color='black', linewidth=1)
 
             # horizontal
             for i in range(-4,5):
                 ax.plot([0, border_x],[border_y * (i + 4)/8, border_y * (i + 4)/8], marker='o', color='black', linewidth=0.5)
-                self.text = ax.annotate(i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black")
+                self.text = ax.annotate(-1*i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black", rotation=180)
             ax.plot([0, border_x], [border_y /2, border_y /2], marker='o', color='black', linewidth=1)
 
         red_points = self.find_red(colors)
@@ -105,7 +105,7 @@ class vlakvergelijking(ModuleTemplate):
         return frame, ax, cmap, extent
 
     def add_text(self, ax, x, y, text):
-        self.text = ax.annotate(text, (x,y), color='red')
+        self.text = ax.annotate(text, (x,y), color='red', rotation=180)
 
     def _create_widgets(self):
         """
@@ -148,7 +148,7 @@ class vlakvergelijking(ModuleTemplate):
             pass
 
         ## print random equation
-        self.random_equation = ax.annotate("Random equation:" + result, (3, 3), color="#bf0707", fontsize=14)
+        self.random_equation = ax.annotate("Random equation:" + result, (3, 3), color="#bf0707", fontsize=14, rotation=180)
 
     def parameters_to_string(self, equation):
         ''' Combine the parameters to one string to be printed'''
@@ -201,7 +201,7 @@ class vlakvergelijking(ModuleTemplate):
         normal = n / norm
         equation = Plane(point=translated_points[0].tolist(), normal=normal.tolist()).cartesian()
         result = self.parameters_to_string(equation)
-        self.equation = ax.annotate("Equation:" + result, (100, 3), color="#bf0707", fontsize=14)
+        self.equation = ax.annotate("Equation:" + result, (100, 3), color="#bf0707", fontsize=14, rotation=180)
 
     def show_widgets(self):
         self._create_widgets()
