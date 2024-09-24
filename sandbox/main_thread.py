@@ -129,7 +129,7 @@ class MainThread:
 
         """
         self.sb_params['ax'] = self.projector.ax
-
+        self.sb_params['colors'] = self.sensor.get_color()
         if self._loaded_frame:
             frame = self.previous_frame  # if loaded DEM the previous frame will have this information
             self.sb_params['extent'] = [0, frame.shape[1], 0, frame.shape[0], frame.min(), frame.max()]

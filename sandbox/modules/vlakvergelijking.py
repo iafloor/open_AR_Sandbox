@@ -40,6 +40,7 @@ class vlakvergelijking(ModuleTemplate):
         ax = sb_params.get('ax')
         cmap = sb_params.get("cmap")
         colors = sb_params['colors']
+     
 
         frame, ax, cmap, extent = self.plot(frame, ax, colors, cmap, extent)
 
@@ -75,6 +76,14 @@ class vlakvergelijking(ModuleTemplate):
                 self.text = ax.annotate(-1*i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black", rotation=180)
             ax.plot([0, border_x], [border_y /2, border_y /2], marker='o', color='black', linewidth=1)
 
+        print(colors.shape)
+        colorx = colors.shape[1]
+        colory = colors.shape[0]
+        idx, idy = self.most_red(colors, ax)
+        print("coordinates", border_x, border_y, idx*border_x/colorx, idy*border_y/colory)
+        self.red = ax.plot(idx*border_x/colorx, idy*border_y/colory, marker='o', color='black', linewidth=4)
+        
+        
         red_points = self.find_red(colors)
         if len(red_points) == 3:
             ## add z coordinate
@@ -148,7 +157,7 @@ class vlakvergelijking(ModuleTemplate):
             pass
 
         ## print random equation
-        self.random_equation = ax.annotate("Random equation:" + result, (3, 3), color="#bf0707", fontsize=14, rotation=180)
+        self.random_equation = ax.annotate("Random equation:" + result, (10, 10), color="#bf0707", fontsize=14, rotation=180)
 
     def parameters_to_string(self, equation):
         ''' Combine the parameters to one string to be printed'''
@@ -167,6 +176,22 @@ class vlakvergelijking(ModuleTemplate):
                 result = result + str(abs(round(equation[i] * 10))) + parameters[i]
         result = result + "= 0"
         return result
+        
+    def most_red(self, colors, ax):
+        mostred = 0
+        idx = 0
+        idy = 0
+        for i in range(colors.shape[0]):
+            for j in range(colors.shape[1]):
+                redness = colors[i][j][0]*2/(colors[i][j][1] + colors[i][j][2] + 1)
+                if redness > mostred:
+                    mostred = redness
+                    idx = i
+                    idy = j
+                    
+        print("mostred", mostred, idx, idy, colors[idx][idy])
+        return idx, idy
+                    
 
     def find_red(self, colors):
         ''' Currently, we first look for all red colored points (needs some tweeking when using an actual sandbox
