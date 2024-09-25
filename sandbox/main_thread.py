@@ -332,7 +332,7 @@ class MainThread:
             logger.info('Thread already running.')
 
     def stop(self):
-        if self.thread_status is not 'stopped':
+        if self.thread_status != 'stopped':
             if _platform == "Linux":
                 if self.sensor.s_name == "kinect_v2" or self.sensor.s_name == "lidar":
                     self.sensor.Sensor._stop()

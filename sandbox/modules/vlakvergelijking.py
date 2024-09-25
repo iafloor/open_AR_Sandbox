@@ -61,30 +61,42 @@ class vlakvergelijking(ModuleTemplate):
 
         border_x = frame.shape[1]
         border_y = frame.shape[0]
-
         # add gridlines
         # vertical
         if self.axes:
             for i in range(-6,7):
                 ax.plot([border_x*(i+6)/12, border_x*(i+6)/12], [0, border_y], marker='o', color='black', linewidth=0.5)
-                self.text = ax.annotate(-1*i, (border_x*(i+6)/12 + 2,border_y/2-5), color="black", rotation=180)
+                self.axeslabels = ax.annotate(-1*i, (border_x*(i+6)/12 + 2,border_y/2-5), color="black", rotation=180)
             ax.plot([border_x/2, border_x/2], [0, border_y], marker='o', color='black', linewidth=1)
 
             # horizontal
             for i in range(-4,5):
                 ax.plot([0, border_x],[border_y * (i + 4)/8, border_y * (i + 4)/8], marker='o', color='black', linewidth=0.5)
-                self.text = ax.annotate(-1*i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black", rotation=180)
+                self.axeslabels = ax.annotate(-1*i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black", rotation=180)
             ax.plot([0, border_x], [border_y /2, border_y /2], marker='o', color='black', linewidth=1)
 
-        print(colors.shape)
+        #print(colors.shape)
         colorx = colors.shape[1]
         colory = colors.shape[0]
         idx, idy = self.most_red(colors, ax)
-        print("coordinates", border_x, border_y, idx*border_x/colorx, idy*border_y/colory)
+        #print("coordinates", border_x, border_y, idx*border_x/colorx, idy*border_y/colory)
+        try:
+            red = self.red.pop(0)
+            red.remove()
+            print("remove red")
+        except:
+            print("no red")
+            pass
         self.red = ax.plot(idx*border_x/colorx, idy*border_y/colory, marker='o', color='black', linewidth=4)
+        try:
+            self.red.remove()
+            print("now it words")
+        except:
+            pass
         
         
         red_points = self.find_red(colors)
+        np.asarray(red_points).tofile('foo.csv', sep=',', format='%10.5f')
         if len(red_points) == 3:
             ## add z coordinate
             for i in range(3):
@@ -93,9 +105,26 @@ class vlakvergelijking(ModuleTemplate):
 
             ## print the points and labels
             labels = ["A", "B", "C"]
-            for i in range(3):
-                self.text = self.add_text(ax, red_points[i][0] + 1, red_points[i][1] + 1, labels[i] )
-                self.point = ax.plot(red_points[i][0], red_points[i][1], marker='o', color='red', linewidth=1)
+            try:
+                self.labelA.remove()
+                self.labelB.remove()
+                self.labelC.remove()
+                pa = self.pointA.pop(0)
+                pa.remove()
+                pb = self.pointB.pop(0)
+                pb.remove()
+                pc = self.pointC.pop(0)
+                pc.remove()
+                print("remove label")
+            except:
+                print("no label")
+                pass
+            self.labelA = ax.annotate("A", (red_points[0][0] + 1, red_points[0][1] + 1), color="#bf0707", fontsize=14, rotation=180)
+            self.labelB = ax.annotate("B", (red_points[1][0] + 1, red_points[1][1] + 1), color="#bf0707", fontsize=14, rotation=180)
+            self.labelC = ax.annotate("C", (red_points[2][0] + 1, red_points[2][1] + 1), color="#bf0707", fontsize=14, rotation=180)
+            self.pointA = ax.plot(red_points[0][0], red_points[0][1], marker='o', color='red', linewidth=1)
+            self.pointB = ax.plot(red_points[1][0], red_points[1][1], marker='o', color='red', linewidth=1)
+            self.pointC = ax.plot(red_points[2][0], red_points[2][1], marker='o', color='red', linewidth=1)
 
             ## find coëfficients of plane through min max and 50,50
             translated_points = []
@@ -193,6 +222,7 @@ class vlakvergelijking(ModuleTemplate):
         return idx, idy
                     
 
+    ## FUNCTION TO FIND ALL RED POINTS
     def find_red(self, colors):
         ''' Currently, we first look for all red colored points (needs some tweeking when using an actual sandbox
             then, we filter through the list and remove all points that are close to each oter (and just leave one
@@ -226,6 +256,10 @@ class vlakvergelijking(ModuleTemplate):
         normal = n / norm
         equation = Plane(point=translated_points[0].tolist(), normal=normal.tolist()).cartesian()
         result = self.parameters_to_string(equation)
+        try:
+            self.equation .remove()
+        except:
+            pass
         self.equation = ax.annotate("Equation:" + result, (100, 3), color="#bf0707", fontsize=14, rotation=180)
 
     def show_widgets(self):
