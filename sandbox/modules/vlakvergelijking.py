@@ -100,11 +100,24 @@ class vlakvergelijking(ModuleTemplate):
         print(red_points)
         np.asarray(colors).tofile('foo.csv', sep=',', format='%10.5f')
         self.pointe = ax.plot(30,30,marker='o', color = 'red', linewidth=1)
-        if False:
+        if len(red_points) > 0:
             ## add z coordinate
-            for i in range(3):
-                height = frame[red_points[i][1], red_points[i][0]]
+            frame1 = frame.shape[1]
+            frame0 = frame.shape[0]
+            color1 = colors.shape[1]
+            color0 = colors.shape[0]
+            for i in range(len(red_points)):
+                
+                ## translate from color to frame
+                id1 = round(frame1 * red_points[i][1]/color1) - 1
+                id0 = round(frame0 * red_points[i][0]/color0) - 1
+                print(id0,id1)
+                height = frame[id0,id1]
+                print("height", height)
                 red_points[i].append(height)
+                red_points[i][0] = id0
+                red_points[i][1] = id1
+                print("the point", red_points)
 
             ## print the points and labels
             labels = ["A", "B", "C"]
@@ -123,20 +136,20 @@ class vlakvergelijking(ModuleTemplate):
                 print("no label")
                 pass
             self.labelA = ax.annotate("A", (red_points[0][0] + 1, red_points[0][1] + 1), color="#bf0707", fontsize=14, rotation=180)
-            self.labelB = ax.annotate("B", (red_points[1][0] + 1, red_points[1][1] + 1), color="#bf0707", fontsize=14, rotation=180)
-            self.labelC = ax.annotate("C", (red_points[2][0] + 1, red_points[2][1] + 1), color="#bf0707", fontsize=14, rotation=180)
+            #self.labelB = ax.annotate("B", (red_points[1][0] + 1, red_points[1][1] + 1), color="#bf0707", fontsize=14, rotation=180)
+            #self.labelC = ax.annotate("C", (red_points[2][0] + 1, red_points[2][1] + 1), color="#bf0707", fontsize=14, rotation=180)
             self.pointA = ax.plot(red_points[0][0], red_points[0][1], marker='o', color='red', linewidth=1)
-            self.pointB = ax.plot(red_points[1][0], red_points[1][1], marker='o', color='red', linewidth=1)
-            self.pointC = ax.plot(red_points[2][0], red_points[2][1], marker='o', color='red', linewidth=1)
+            #self.pointB = ax.plot(red_points[1][0], red_points[1][1], marker='o', color='red', linewidth=1)
+           # self.pointC = ax.plot(red_points[2][0], red_points[2][1], marker='o', color='red', linewidth=1)
 
             ## find coëfficients of plane through min max and 50,50
             translated_points = []
-            for i in range(3):
-                p = np.array([self.translate_x(red_points[i][0], border_x), self.translate_y(red_points[i][1], border_y), self.translate_z(red_points[i][2], 100)])
-                translated_points.append(p)
+            #for i in range(3):
+            #    p = np.array([self.translate_x(red_points[i][0], border_x), self.translate_y(red_points[i][1], border_y), self.translate_z(red_points[i][2], 100)])
+            #    translated_points.append(p)
 
             ## plane by user
-            self.plane_equation(translated_points, ax)
+            #self.plane_equation(translated_points, ax)
 
         ## random plane
         if self.get_random_equation:
@@ -233,6 +246,7 @@ class vlakvergelijking(ModuleTemplate):
             could be changed'''
         points = [] # list of all red points
         key_points = []
+        print("color shape in find red", colors.shape)
         for i in range(colors.shape[0]): # loop through all pixels
             for j in range(colors.shape[1]):
                 if colors[i][j][0] > 200 and colors[i][j][1] < 150 and colors[i][j][2] < 150: # if red enough, add to list

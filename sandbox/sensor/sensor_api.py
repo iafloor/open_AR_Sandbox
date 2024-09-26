@@ -208,6 +208,19 @@ class Sensor:
         # TODO: File numpy issue?
         crop = frame[self.s_bottom:-self.s_top, self.s_left:-self.s_right]
         return crop
+        
+    def crop_colors(self, frame: numpy.ndarray) -> numpy.ndarray:
+        """ Crops the data frame accoreding to the margins set up in the calibration relative to the
+            size of the colors frame """
+            
+        bottom = round(self.s_bottom *  self.c_height / self.s_height)
+        top = round(self.s_top *  self.c_height / self.s_height)
+        print("top numbers", self.s_top, self.c_height, self.s_height, top)
+        right = round(self.s_right *  self.c_width / self.s_width)
+        left = round(self.s_left *  self.c_width / self.s_width) 
+        crop = frame[top: -bottom, right: -left]
+        return crop
+            
 
     def crop_frame_workaround(self, frame: numpy.ndarray) -> numpy.ndarray:
         # bullet proof working example
@@ -259,7 +272,7 @@ class Sensor:
         colors = self.Sensor.get_color()
         print("color frame", colors.shape)
         if self.crop:
-            colors = self.crop_frame(colors)
+            colors = self.crop_colors(colors)
             print("cropped colors", colors.shape)
         if False: #self.clip:
             colors = self.clip_frame(colors)
