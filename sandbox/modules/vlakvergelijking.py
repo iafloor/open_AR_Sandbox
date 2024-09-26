@@ -115,25 +115,23 @@ class vlakvergelijking(ModuleTemplate):
                 height = frame[id0,id1]
                 print("height", height)
                 red_points[i].append(height)
-                red_points[i][0] = id0
-                red_points[i][1] = id1
+                red_points[i][0] = frame1 - id1
+                red_points[i][1] = id0
                 print("the point", red_points)
 
             ## print the points and labels
             labels = ["A", "B", "C"]
             try:
                 self.labelA.remove()
-                self.labelB.remove()
-                self.labelC.remove()
                 pa = self.pointA.pop(0)
                 pa.remove()
+                self.labelB.remove()
                 pb = self.pointB.pop(0)
                 pb.remove()
+                self.labelC.remove()
                 pc = self.pointC.pop(0)
                 pc.remove()
-                print("remove label")
             except:
-                print("no label")
                 pass
             self.labelA = ax.annotate("A", (red_points[0][0] + 1, red_points[0][1] + 1), color="#bf0707", fontsize=14, rotation=180)
             #self.labelB = ax.annotate("B", (red_points[1][0] + 1, red_points[1][1] + 1), color="#bf0707", fontsize=14, rotation=180)
@@ -221,22 +219,6 @@ class vlakvergelijking(ModuleTemplate):
                 result = result + str(abs(round(equation[i] * 10))) + parameters[i]
         result = result + "= 0"
         return result
-        
-    def most_red(self, colors, ax):
-        mostred = 0
-        idx = 0
-        idy = 0
-        for i in range(colors.shape[0]):
-            for j in range(colors.shape[1]):
-                redness = colors[i][j][0]*2/(colors[i][j][1] + colors[i][j][2] + 1)
-                if redness > mostred:
-                    mostred = redness
-                    idx = i
-                    idy = j
-                    
-        print("mostred", mostred, idx, idy, colors[idx][idy])
-        return idx, idy
-                    
 
     ## FUNCTION TO FIND ALL RED POINTS
     def find_red(self, colors):
