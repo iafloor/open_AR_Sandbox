@@ -91,6 +91,8 @@ class Sensor:
         self.s_name = self.Sensor.name
         self.s_width = self.Sensor.depth_width
         self.s_height = self.Sensor.depth_height
+        self.c_width = self.Sensor.color_width
+        self.c_height = self.Sensor.color_height
         self.depth = None
         self.crop = crop_values
         self.clip = clip_values
@@ -237,12 +239,14 @@ class Sensor:
 
     def get_frame(self) -> numpy.ndarray:
         frame = self.get_raw_frame(self.filter)
+        print("depth frame", frame.shape)
         if self.Sensor.name == "dummy":
             print("dummy sensor")
             self.depth = frame
             return self.depth
         if self.crop:
             frame = self.crop_frame(frame)
+            print("cropped frame", frame.shape)
         if self.clip:
             # frame = self.depth_mask(frame) #TODO: When is this needed?
             frame = self.clip_frame(frame)
@@ -253,6 +257,14 @@ class Sensor:
 
     def get_color(self) -> numpy.ndarray:
         colors = self.Sensor.get_color()
+        print("color frame", colors.shape)
+        if self.crop:
+            colors = self.crop_frame(colors)
+            print("cropped colors", colors.shape)
+        if False: #self.clip:
+            colors = self.clip_frame(colors)
+        if False: #self.invert:
+            colors = self.get_inverted_frame(colors)
         return colors
 
     @property

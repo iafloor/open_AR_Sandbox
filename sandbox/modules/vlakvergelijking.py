@@ -58,9 +58,11 @@ class vlakvergelijking(ModuleTemplate):
 
 
     def plot(self, frame, ax, colors, cmap, extent):
+    
 
         border_x = frame.shape[1]
         border_y = frame.shape[0]
+        print("borders", border_x, border_y)
         # add gridlines
         # vertical
         if self.axes:
@@ -78,16 +80,15 @@ class vlakvergelijking(ModuleTemplate):
         #print(colors.shape)
         colorx = colors.shape[1]
         colory = colors.shape[0]
-        idx, idy = self.most_red(colors, ax)
+        #idx, idy = self.most_red(colors, ax)
         #print("coordinates", border_x, border_y, idx*border_x/colorx, idy*border_y/colory)
         try:
             red = self.red.pop(0)
             red.remove()
             print("remove red")
-        except:
-            print("no red")
+        except:  
             pass
-        self.red = ax.plot(idx*border_x/colorx, idy*border_y/colory, marker='o', color='black', linewidth=4)
+        self.red = ax.plot(1*border_x/colorx, 1*border_y/colory, marker='o', color='black', linewidth=4)
         try:
             self.red.remove()
             print("now it words")
@@ -96,8 +97,10 @@ class vlakvergelijking(ModuleTemplate):
         
         
         red_points = self.find_red(colors)
-        np.asarray(red_points).tofile('foo.csv', sep=',', format='%10.5f')
-        if len(red_points) == 3:
+        print(red_points)
+        np.asarray(colors).tofile('foo.csv', sep=',', format='%10.5f')
+        self.pointe = ax.plot(30,30,marker='o', color = 'red', linewidth=1)
+        if False:
             ## add z coordinate
             for i in range(3):
                 height = frame[red_points[i][1], red_points[i][0]]
@@ -232,7 +235,7 @@ class vlakvergelijking(ModuleTemplate):
         key_points = []
         for i in range(colors.shape[0]): # loop through all pixels
             for j in range(colors.shape[1]):
-                if colors[i][j][0] > 200 and colors[i][j][1] < 100 and colors[i][j][2] < 100: # if red enough, add to list
+                if colors[i][j][0] > 200 and colors[i][j][1] < 150 and colors[i][j][2] < 150: # if red enough, add to list
                     points.append([i,j])
 
         ## find key points
@@ -243,7 +246,7 @@ class vlakvergelijking(ModuleTemplate):
                 if i == j or i == [] or j == []:
                    continue
                 else:
-                    if abs(i[0] - j[0]) < 10 and abs(i[1] - j[1]) < 10: # if closer to each other than 10 pixels, remove one
+                    if abs(i[0] - j[0]) < 40 and abs(i[1] - j[1]) < 40: # if closer to each other than 10 pixels, remove one
                         points[id] = []
         res = [ele for ele in points if ele != []]
         return res
