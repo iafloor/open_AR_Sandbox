@@ -27,6 +27,8 @@ class vlakvergelijking(ModuleTemplate):
         self.color = True
         self.contour = False
         self.axes = False
+        self.findRed = False
+        self.findHigh = False
         self.get_random_equation = False
         logger.info("VlakModules loaded successfully")
 
@@ -62,7 +64,6 @@ class vlakvergelijking(ModuleTemplate):
 
         border_x = frame.shape[1]
         border_y = frame.shape[0]
-        print("borders", border_x, border_y)
         # add gridlines
         # vertical
         if self.axes:
@@ -77,78 +78,67 @@ class vlakvergelijking(ModuleTemplate):
                 self.axeslabels = ax.annotate(-1*i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black", rotation=180)
             ax.plot([0, border_x], [border_y /2, border_y /2], marker='o', color='black', linewidth=1)
 
-        #print(colors.shape)
-        colorx = colors.shape[1]
-        colory = colors.shape[0]
-        #idx, idy = self.most_red(colors, ax)
-        #print("coordinates", border_x, border_y, idx*border_x/colorx, idy*border_y/colory)
-        try:
-            red = self.red.pop(0)
-            red.remove()
-            print("remove red")
-        except:  
-            pass
-        self.red = ax.plot(1*border_x/colorx, 1*border_y/colory, marker='o', color='black', linewidth=4)
-        try:
-            self.red.remove()
-            print("now it words")
-        except:
-            pass
-        
-        
-        red_points = self.find_red(colors)
-        print(red_points)
-        np.asarray(colors).tofile('foo.csv', sep=',', format='%10.5f')
-        self.pointe = ax.plot(30,30,marker='o', color = 'red', linewidth=1)
-        if len(red_points) > 0:
-            ## add z coordinate
-            frame1 = frame.shape[1]
-            frame0 = frame.shape[0]
-            color1 = colors.shape[1]
-            color0 = colors.shape[0]
-            for i in range(len(red_points)):
-                
-                ## translate from color to frame
-                id1 = round(frame1 * red_points[i][1]/color1) - 1
-                id0 = round(frame0 * red_points[i][0]/color0) - 1
-                print(id0,id1)
-                height = frame[id0,id1]
-                print("height", height)
-                red_points[i].append(height)
-                red_points[i][0] = frame1 - id1
-                red_points[i][1] = id0
-                print("the point", red_points)
+        if findRed:
+            red_points = self.find_red(colors)
+            print(red_points)
+            np.asarray(colors).tofile('foo.csv', sep=',', format='%10.5f')
+            if len(red_points) > 0:
+                ## add z coordinate
+                frame1 = frame.shape[1]
+                frame0 = frame.shape[0]
+                color1 = colors.shape[1]
+                color0 = colors.shape[0]
+                for i in range(len(red_points)):
 
-            ## print the points and labels
-            labels = ["A", "B", "C"]
-            try:
-                self.labelA.remove()
-                pa = self.pointA.pop(0)
-                pa.remove()
-                self.labelB.remove()
-                pb = self.pointB.pop(0)
-                pb.remove()
-                self.labelC.remove()
-                pc = self.pointC.pop(0)
-                pc.remove()
-            except:
-                pass
-            self.labelA = ax.annotate("A", (red_points[0][0] + 1, red_points[0][1] + 1), color="#bf0707", fontsize=14, rotation=180)
-            #self.labelB = ax.annotate("B", (red_points[1][0] + 1, red_points[1][1] + 1), color="#bf0707", fontsize=14, rotation=180)
-            #self.labelC = ax.annotate("C", (red_points[2][0] + 1, red_points[2][1] + 1), color="#bf0707", fontsize=14, rotation=180)
-            self.pointA = ax.plot(red_points[0][0], red_points[0][1], marker='o', color='red', linewidth=1)
-            #self.pointB = ax.plot(red_points[1][0], red_points[1][1], marker='o', color='red', linewidth=1)
-           # self.pointC = ax.plot(red_points[2][0], red_points[2][1], marker='o', color='red', linewidth=1)
+                    ## translate from color to frame
+                    id1 = round(frame1 * red_points[i][1]/color1) - 1
+                    id0 = round(frame0 * red_points[i][0]/color0) - 1
+                    print(id0,id1)
+                    height = frame[id0,id1]
+                    red_points[i].append(height)
+                    red_points[i][0] = frame1 - id1
+                    red_points[i][1] = id0
+                    print("the point", red_points)
 
-            ## find coëfficients of plane through min max and 50,50
-            translated_points = []
-            #for i in range(3):
-            #    p = np.array([self.translate_x(red_points[i][0], border_x), self.translate_y(red_points[i][1], border_y), self.translate_z(red_points[i][2], 100)])
-            #    translated_points.append(p)
+                ## print the points and labels
+                labels = ["A", "B", "C"]
+                try:
+                    self.labelA.remove()
+                    pa = self.pointA.pop(0)
+                    pa.remove()
+                except:
+                    pass
+                try:
+                    self.labelB.remove()
+                    pb = self.pointB.pop(0)
+                    pb.remove()
+                except:
+                    pass
+                try:
+                    self.labelC.remove()
+                    pc = self.pointC.pop(0)
+                    pc.remove()
+                except:
+                    pass
+                self.labelA = ax.annotate("A", (red_points[0][0] + 1, red_points[0][1] + 1), color="#bf0707", fontsize=14, rotation=180)
+                #self.labelB = ax.annotate("B", (red_points[1][0] + 1, red_points[1][1] + 1), color="#bf0707", fontsize=14, rotation=180)
+                #self.labelC = ax.annotate("C", (red_points[2][0] + 1, red_points[2][1] + 1), color="#bf0707", fontsize=14, rotation=180)
+                self.pointA = ax.plot(red_points[0][0], red_points[0][1], marker='o', color='red', linewidth=1)
+                #self.pointB = ax.plot(red_points[1][0], red_points[1][1], marker='o', color='red', linewidth=1)
+               # self.pointC = ax.plot(red_points[2][0], red_points[2][1], marker='o', color='red', linewidth=1)
 
-            ## plane by user
-            #self.plane_equation(translated_points, ax)
+                ## find coëfficients of plane through min max and 50,50
+                translated_points = []
+                #for i in range(3):
+                #    p = np.array([self.translate_x(red_points[i][0], border_x), self.translate_y(red_points[i][1], border_y), self.translate_z(red_points[i][2], 100)])
+                #    translated_points.append(p)
 
+                ## plane by user
+                #self.plane_equation(translated_points, ax)
+
+        if findHigh:
+            high_points = self.find_high(frame, 100)
+            print("all high points", high_points)
         ## random plane
         if self.get_random_equation:
             self.create_random_plane_equation(ax)
@@ -174,8 +164,16 @@ class vlakvergelijking(ModuleTemplate):
         self._widget_axes = pn.widgets.Checkbox(name='Show axes', value=self.axes)
         self._widget_axes.param.watch(self._callback_axes, 'value', onlychanged=False)
 
+        self._widget_red = pn.widgets.Checkbox(name='Find red points', value=self.findRed)
+        self._widget_red.param.watch(self._callback_axes, 'value', onlychanged=False)
+
+        self._widget_high = pn.widgets.Checkbox(name='Find high points', value=self.findHigh)
+        self._widget_high.param.watch(self._callback_axes, 'value', onlychanged=False)
+
         self._widget_rand_eq = pn.widgets.Button(name='get random equation', button_type='primary')
         self._widget_rand_eq.param.watch(self._callback_equation, 'value', onlychanged=False)
+
+
 
     def translate_x(self, x, total):
         return round(x*12/total - 6,1)
@@ -235,7 +233,7 @@ class vlakvergelijking(ModuleTemplate):
                     points.append([i,j])
 
         ## find key points
-        for i in points:
+        #  for i in points:
             if i == []:
                 continue
             for id, j in enumerate(points):
@@ -244,9 +242,17 @@ class vlakvergelijking(ModuleTemplate):
                 else:
                     if abs(i[0] - j[0]) < 40 and abs(i[1] - j[1]) < 40: # if closer to each other than 10 pixels, remove one
                         points[id] = []
-        res = [ele for ele in points if ele != []]
+        # res = [ele for ele in points if ele != []]
         return res
 
+    def find_high(self, frame, height):
+        ''' function to find all high points, needed for calibration.'''
+
+        high_points = []
+        for i in range(frame.shape[0]):
+            for j in range(frame.shape[1]):
+                if frame[i][j] > height:
+                    high_points.append([i,j])
     def plane_equation(self, translated_points, ax):
         ## find equation
         n = np.cross(np.subtract(translated_points[0], translated_points[2]),
@@ -267,6 +273,8 @@ class vlakvergelijking(ModuleTemplate):
                           self._widget_color,
                           self._widget_contour,
                           self._widget_axes,
+                          self._widget_red,
+                          self._widget_high,
                           self._widget_rand_eq
                           )
         return panel
@@ -278,3 +286,7 @@ class vlakvergelijking(ModuleTemplate):
     def _callback_axes(self, event): self.axes = event.new
 
     def _callback_equation(self, event): self.get_random_equation = event.new
+
+    def _callback_find_red(self, event): self.findRed = event.new
+
+    def _callback_find_high(self, event): self.findHigh = event.new
