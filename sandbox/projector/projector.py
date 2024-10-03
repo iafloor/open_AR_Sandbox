@@ -137,8 +137,8 @@ class Projector(object):
         self.ax.get_yaxis().set_visible(False)
         print("size", self.p_frame_width, self.p_frame_height)
         self.frame = pn.pane.Matplotlib(self.figure,
-                                        width=1200,
-                                        height=600,
+                                        width=self.p_frame_width,
+                                        height=self.p_frame_height,
                                         margin=(self.p_frame_top, 0, 0, self.p_frame_left),
                                         tight=False,
                                         dpi=self.dpi,

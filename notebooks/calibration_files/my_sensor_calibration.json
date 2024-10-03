@@ -1,1 +1,1 @@
-{"version": "2.1.s", "s_name": "kinect_v2", "s_top": 91, "s_right": 15, "s_bottom": 23, "s_left": 82, "s_frame_width": 415, "s_frame_height": 310, "s_min": 620, "s_max": 1225, "box_width": 1000, "box_height": 800}
+{"version": "2.1.s", "s_name": "kinect_v2", "s_top": 63, "s_right": 73, "s_bottom": 94, "s_left": 48, "s_frame_width": 391, "s_frame_height": 267, "s_min": 559, "s_max": 956, "box_width": 1000, "box_height": 800}

@@ -31,6 +31,7 @@ class Sensor:
         self.json_filename = calibsensor
         self.version = '2.1.s'
         if calibsensor is None:
+            print("calibsensor is none") 
             self.s_name = name
             self.s_top = 10
             self.s_right = 10
@@ -206,6 +207,7 @@ class Sensor:
         # TODO: Does not work yet for s_top = 0 and s_right = 0, which currently returns an empty frame!
         # TODO: Workaround: do not allow zeroes in calibration widget and use default value = 1
         # TODO: File numpy issue?
+        print("sizes", self.s_bottom, self.s_top, self.s_left, self.s_right)
         crop = frame[self.s_bottom:-self.s_top, self.s_left:-self.s_right]
         return crop
         
@@ -215,7 +217,6 @@ class Sensor:
             
         bottom = round(self.s_bottom *  self.c_height / self.s_height)
         top = round(self.s_top *  self.c_height / self.s_height)
-        print("top numbers", self.s_top, self.c_height, self.s_height, top)
         right = round(self.s_right *  self.c_width / self.s_width)
         left = round(self.s_left *  self.c_width / self.s_width) 
         crop = frame[top: -bottom, right: -left]
@@ -270,10 +271,8 @@ class Sensor:
 
     def get_color(self) -> numpy.ndarray:
         colors = self.Sensor.get_color()
-        print("color frame", colors.shape)
         if self.crop:
             colors = self.crop_colors(colors)
-            print("cropped colors", colors.shape)
         if False: #self.clip:
             colors = self.clip_frame(colors)
         if False: #self.invert:

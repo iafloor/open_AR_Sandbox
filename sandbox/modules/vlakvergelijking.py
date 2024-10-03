@@ -78,7 +78,7 @@ class vlakvergelijking(ModuleTemplate):
                 self.axeslabels = ax.annotate(-1*i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black", rotation=180)
             ax.plot([0, border_x], [border_y /2, border_y /2], marker='o', color='black', linewidth=1)
 
-        if findRed:
+        if self.findRed:
             red_points = self.find_red(colors)
             print(red_points)
             np.asarray(colors).tofile('foo.csv', sep=',', format='%10.5f')
@@ -136,7 +136,7 @@ class vlakvergelijking(ModuleTemplate):
                 ## plane by user
                 #self.plane_equation(translated_points, ax)
 
-        if findHigh:
+        if self.findHigh:
             high_points = self.find_high(frame, 100)
             print("all high points", high_points)
         ## random plane
