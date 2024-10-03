@@ -31,7 +31,6 @@ class Sensor:
         self.json_filename = calibsensor
         self.version = '2.1.s'
         if calibsensor is None:
-            print("calibsensor is none") 
             self.s_name = name
             self.s_top = 10
             self.s_right = 10
@@ -207,7 +206,6 @@ class Sensor:
         # TODO: Does not work yet for s_top = 0 and s_right = 0, which currently returns an empty frame!
         # TODO: Workaround: do not allow zeroes in calibration widget and use default value = 1
         # TODO: File numpy issue?
-        print("sizes", self.s_bottom, self.s_top, self.s_left, self.s_right)
         crop = frame[self.s_bottom:-self.s_top, self.s_left:-self.s_right]
         return crop
         
@@ -253,14 +251,12 @@ class Sensor:
 
     def get_frame(self) -> numpy.ndarray:
         frame = self.get_raw_frame(self.filter)
-        print("depth frame", frame.shape)
         if self.Sensor.name == "dummy":
             print("dummy sensor")
             self.depth = frame
             return self.depth
         if self.crop:
             frame = self.crop_frame(frame)
-            print("cropped frame", frame.shape)
         if self.clip:
             # frame = self.depth_mask(frame) #TODO: When is this needed?
             frame = self.clip_frame(frame)

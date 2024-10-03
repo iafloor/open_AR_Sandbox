@@ -5,6 +5,7 @@ from matplotlib.colors import LightSource
 import numpy
 import panel as pn
 import numpy as np
+import pandas as pd
 from skspatial.objects import Plane
 from .template import ModuleTemplate
 from sandbox import set_logger
@@ -29,6 +30,10 @@ class vlakvergelijking(ModuleTemplate):
         self.axes = False
         self.findRed = False
         self.findHigh = False
+        self.findEquation = False
+        self.height = 100
+        self.x = 100
+        self.y = 100
         self.get_random_equation = False
         logger.info("VlakModules loaded successfully")
 
@@ -77,12 +82,22 @@ class vlakvergelijking(ModuleTemplate):
                 ax.plot([0, border_x],[border_y * (i + 4)/8, border_y * (i + 4)/8], marker='o', color='black', linewidth=0.5)
                 self.axeslabels = ax.annotate(-1*i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black", rotation=180)
             ax.plot([0, border_x], [border_y /2, border_y /2], marker='o', color='black', linewidth=1)
-
+       
+        self.pointA = ax.plot(self.x, self.y, marker='o', color='red', linewidth=1)
+        
+        
+        
         if self.findRed:
+            colors = self.reshape_colors(colors, frame)
+            print("colors size", colors.shape)
             red_points = self.find_red(colors)
-            print(red_points)
-            np.asarray(colors).tofile('foo.csv', sep=',', format='%10.5f')
-            if len(red_points) > 0:
+            if len(red_points) == 1:
+                print("there should be a red point now")
+                
+                
+            if self.findEquation:
+                print("find equation")
+                self.findEquation = False
                 ## add z coordinate
                 frame1 = frame.shape[1]
                 frame0 = frame.shape[0]
@@ -93,7 +108,6 @@ class vlakvergelijking(ModuleTemplate):
                     ## translate from color to frame
                     id1 = round(frame1 * red_points[i][1]/color1) - 1
                     id0 = round(frame0 * red_points[i][0]/color0) - 1
-                    print(id0,id1)
                     height = frame[id0,id1]
                     red_points[i].append(height)
                     red_points[i][0] = frame1 - id1
@@ -106,38 +120,33 @@ class vlakvergelijking(ModuleTemplate):
                     self.labelA.remove()
                     pa = self.pointA.pop(0)
                     pa.remove()
-                except:
-                    pass
-                try:
                     self.labelB.remove()
                     pb = self.pointB.pop(0)
                     pb.remove()
-                except:
-                    pass
-                try:
                     self.labelC.remove()
                     pc = self.pointC.pop(0)
                     pc.remove()
                 except:
                     pass
                 self.labelA = ax.annotate("A", (red_points[0][0] + 1, red_points[0][1] + 1), color="#bf0707", fontsize=14, rotation=180)
-                #self.labelB = ax.annotate("B", (red_points[1][0] + 1, red_points[1][1] + 1), color="#bf0707", fontsize=14, rotation=180)
-                #self.labelC = ax.annotate("C", (red_points[2][0] + 1, red_points[2][1] + 1), color="#bf0707", fontsize=14, rotation=180)
+                self.labelB = ax.annotate("B", (red_points[1][0] + 1, red_points[1][1] + 1), color="#bf0707", fontsize=14, rotation=180)
+                self.labelC = ax.annotate("C", (red_points[2][0] + 1, red_points[2][1] + 1), color="#bf0707", fontsize=14, rotation=180)
                 self.pointA = ax.plot(red_points[0][0], red_points[0][1], marker='o', color='red', linewidth=1)
-                #self.pointB = ax.plot(red_points[1][0], red_points[1][1], marker='o', color='red', linewidth=1)
-               # self.pointC = ax.plot(red_points[2][0], red_points[2][1], marker='o', color='red', linewidth=1)
+                self.pointB = ax.plot(red_points[1][0], red_points[1][1], marker='o', color='red', linewidth=1)
+                self.pointC = ax.plot(red_points[2][0], red_points[2][1], marker='o', color='red', linewidth=1)
 
                 ## find coëfficients of plane through min max and 50,50
                 translated_points = []
-                #for i in range(3):
-                #    p = np.array([self.translate_x(red_points[i][0], border_x), self.translate_y(red_points[i][1], border_y), self.translate_z(red_points[i][2], 100)])
-                #    translated_points.append(p)
+                for i in range(3):
+                    p = np.array([self.translate_x(red_points[i][0], border_x), self.translate_y(red_points[i][1], border_y), self.translate_z(red_points[i][2], 100)])
+                    translated_points.append(p)
 
-                ## plane by user
-                #self.plane_equation(translated_points, ax)
+                ## finding the equation
+                self.plane_equation(translated_points, ax)
 
         if self.findHigh:
-            high_points = self.find_high(frame, 100)
+            print("frame size", frame.shape)
+            high_points = self.find_high(frame, self.height)
             print("all high points", high_points)
         ## random plane
         if self.get_random_equation:
@@ -145,35 +154,6 @@ class vlakvergelijking(ModuleTemplate):
 
 
         return frame, ax, cmap, extent
-
-    def add_text(self, ax, x, y, text):
-        self.text = ax.annotate(text, (x,y), color='red', rotation=180)
-
-    def _create_widgets(self):
-        """
-           Create and show the widgets associated to this module
-           Returns:
-               widget
-           """
-        self._widget_color = pn.widgets.Checkbox(name='Show colors', value=self.color)
-        self._widget_color.param.watch(self._callback_color, 'value', onlychanged=False)
-
-        self._widget_contour = pn.widgets.Checkbox(name='Show contours', value=self.contour)
-        self._widget_contour.param.watch(self._callback_contour, 'value', onlychanged=False)
-
-        self._widget_axes = pn.widgets.Checkbox(name='Show axes', value=self.axes)
-        self._widget_axes.param.watch(self._callback_axes, 'value', onlychanged=False)
-
-        self._widget_red = pn.widgets.Checkbox(name='Find red points', value=self.findRed)
-        self._widget_red.param.watch(self._callback_axes, 'value', onlychanged=False)
-
-        self._widget_high = pn.widgets.Checkbox(name='Find high points', value=self.findHigh)
-        self._widget_high.param.watch(self._callback_axes, 'value', onlychanged=False)
-
-        self._widget_rand_eq = pn.widgets.Button(name='get random equation', button_type='primary')
-        self._widget_rand_eq.param.watch(self._callback_equation, 'value', onlychanged=False)
-
-
 
     def translate_x(self, x, total):
         return round(x*12/total - 6,1)
@@ -218,6 +198,28 @@ class vlakvergelijking(ModuleTemplate):
         result = result + "= 0"
         return result
 
+    def reshape_colors(self, colors, frame):
+        ''' function reshapes color frame to be the same size as colors'''
+        width_f = frame.shape[0]
+        height_f = frame.shape[1]
+        
+        width_c = colors.shape[0]
+        height_c = colors.shape[1]
+        
+        ratio_x = width_c/width_f
+        ratio_y = height_c/ height_f
+        
+        print("ratios", ratio_x, ratio_y)
+        new_colors = np.zeros([frame.shape[0], frame.shape[1], 3])
+        print(new_colors.shape)
+        
+        for i in range(new_colors.shape[0]):
+            for j in range(new_colors.shape[1]):
+                new_colors[i][j] = colors[round(i*ratio_x)][round(j*ratio_y)]
+        return new_colors
+
+        
+        
     ## FUNCTION TO FIND ALL RED POINTS
     def find_red(self, colors):
         ''' Currently, we first look for all red colored points (needs some tweeking when using an actual sandbox
@@ -226,14 +228,19 @@ class vlakvergelijking(ModuleTemplate):
             could be changed'''
         points = [] # list of all red points
         key_points = []
-        print("color shape in find red", colors.shape)
+        print("searching for red points")
+        
+        
         for i in range(colors.shape[0]): # loop through all pixels
             for j in range(colors.shape[1]):
                 if colors[i][j][0] > 200 and colors[i][j][1] < 150 and colors[i][j][2] < 150: # if red enough, add to list
                     points.append([i,j])
 
+        print("len points", len(points))
         ## find key points
         #  for i in points:
+        res = []
+        for i in points:
             if i == []:
                 continue
             for id, j in enumerate(points):
@@ -242,17 +249,33 @@ class vlakvergelijking(ModuleTemplate):
                 else:
                     if abs(i[0] - j[0]) < 40 and abs(i[1] - j[1]) < 40: # if closer to each other than 10 pixels, remove one
                         points[id] = []
-        # res = [ele for ele in points if ele != []]
+            res = [ele for ele in points if ele != []]
+        print(res)
+        # if we have found 3 points, we can make an equation
+        if len(res) == 1:
+            print("found one red point, no equation made")
+            self.findRed = False
+        if len(res) == 3:
+            print("found three red points")
+            self.findEquation = True
+            self.findRed = False
         return res
 
     def find_high(self, frame, height):
         ''' function to find all high points, needed for calibration.'''
-
+        print("height", height)
+        print("frame", frame[0][0])
+        df = pd.DataFrame(frame)
+        df = df.astype(float).round(3)
+        df.to_csv("foo.csv", sep=';', header=False)
         high_points = []
         for i in range(frame.shape[0]):
             for j in range(frame.shape[1]):
                 if frame[i][j] > height:
                     high_points.append([i,j])
+                    
+        print("high_points", high_points)
+        self.findHigh = False
     def plane_equation(self, translated_points, ax):
         ## find equation
         n = np.cross(np.subtract(translated_points[0], translated_points[2]),
@@ -266,6 +289,54 @@ class vlakvergelijking(ModuleTemplate):
         except:
             pass
         self.equation = ax.annotate("Equation:" + result, (100, 3), color="#bf0707", fontsize=14, rotation=180)
+        
+    def _create_widgets(self):
+        """
+           Create and show the widgets associated to this module
+           Returns:
+               widget
+           """
+        self._widget_color = pn.widgets.Checkbox(name='Show colors', value=self.color)
+        self._widget_color.param.watch(self._callback_color, 'value', onlychanged=False)
+
+        self._widget_contour = pn.widgets.Checkbox(name='Show contours', value=self.contour)
+        self._widget_contour.param.watch(self._callback_contour, 'value', onlychanged=False)
+
+        self._widget_axes = pn.widgets.Checkbox(name='Show axes', value=self.axes)
+        self._widget_axes.param.watch(self._callback_axes, 'value', onlychanged=False)
+
+        self._widget_red = pn.widgets.Button(name='Find red points', button_type='primary')
+        self._widget_red.param.watch(self._callback_find_red, 'value', onlychanged=False)
+
+        self._widget_high = pn.widgets.Button(name='Find high points', button_type='primary')
+        self._widget_high.param.watch(self._callback_find_high, 'value', onlychanged=False)
+
+        self._widget_rand_eq = pn.widgets.Button(name='get random equation', button_type='primary')
+        self._widget_rand_eq.param.watch(self._callback_equation, 'value', onlychanged=False)
+        
+        self._widget_high_param = pn.widgets.IntSlider(name='Height',
+                                                  bar_color="#0000ff",
+                                                  value=100,
+                                                  start=1,
+                                                  end=400)
+        self._widget_high_param.param.watch(self._callback_set_height, 'value', onlychanged=False) 
+
+        self._widget_x = pn.widgets.IntSlider(name='x',
+                                                  bar_color="#0000ff",
+                                                  value=100,
+                                                  start=1,
+                                                  end=400)
+        self._widget_x.param.watch(self._callback_x, 'value', onlychanged=False)
+
+        self._widget_y = pn.widgets.IntSlider(name='y',
+                                                  bar_color="#0000ff",
+                                                  value=100,
+                                                  start=1,
+                                                  end=400)
+        self._widget_y.param.watch(self._callback_y, 'value', onlychanged=False)        
+        
+        self._widget_point = pn.widgets.Button(name='draw point', button_type='primary')
+        self._widget_point.param.watch(self._callback_point, 'value', onlychanged=False)
 
     def show_widgets(self):
         self._create_widgets()
@@ -274,8 +345,12 @@ class vlakvergelijking(ModuleTemplate):
                           self._widget_contour,
                           self._widget_axes,
                           self._widget_red,
+                          self._widget_high_param,
                           self._widget_high,
-                          self._widget_rand_eq
+                          self._widget_rand_eq,
+                          self._widget_x,
+                          self._widget_y,
+                          self._widget_point
                           )
         return panel
 
@@ -290,3 +365,11 @@ class vlakvergelijking(ModuleTemplate):
     def _callback_find_red(self, event): self.findRed = event.new
 
     def _callback_find_high(self, event): self.findHigh = event.new
+    
+    def _callback_set_height(self, event) : self.height = float(event.new)
+    
+    def _callback_x(self, event) : self.x = float(event.new)
+    
+    def _callback_y(self, event) : self.y = float(event.new)
+    
+    def _callback_point(self,event) : self.drawPoint = event.new

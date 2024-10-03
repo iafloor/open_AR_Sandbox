@@ -125,7 +125,6 @@ class KinectV2:
         """
         if _platform == 'Windows':
             ir_flattened = self.device.get_last_infrared_frame()
-            print(ir_flattened)
             # reshape the array to 2D with native resolution of the kinectV2
             self.ir_frame_raw = numpy.flipud(ir_flattened.reshape((self.depth_height, self.depth_width)))
         elif _platform == 'Linux':
