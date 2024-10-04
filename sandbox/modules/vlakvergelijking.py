@@ -6,6 +6,7 @@ import numpy
 import panel as pn
 import numpy as np
 import pandas as pd
+import csv
 from skspatial.objects import Plane
 from .template import ModuleTemplate
 from sandbox import set_logger
@@ -69,6 +70,7 @@ class vlakvergelijking(ModuleTemplate):
 
         border_x = frame.shape[1]
         border_y = frame.shape[0]
+        print("borders", border_x, border_y)
         # add gridlines
         # vertical
         if self.axes:
@@ -83,20 +85,40 @@ class vlakvergelijking(ModuleTemplate):
                 self.axeslabels = ax.annotate(-1*i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black", rotation=180)
             ax.plot([0, border_x], [border_y /2, border_y /2], marker='o', color='black', linewidth=1)
        
-        self.pointA = ax.plot(self.x, self.y, marker='o', color='red', linewidth=1)
-        
+        try:
+            p = self.p.pop(0)
+            p.remove()
+        except:
+            pass
+        self.p = ax.plot(self.x, self.y, marker='o', color='red', linewidth=1)
         
         
         if self.findRed:
-            colors = self.reshape_colors(colors, frame)
-            print("colors size", colors.shape)
+            
+            ## rgb to hex 
+            '''
+            colorshex = [["" for i in range(colors.shape[1])] for j in range(colors.shape[0])]
+            print("shape hex", len(colorshex))
+            for i in range(len(colorshex)):
+                for j in range(len(colorshex[0])):
+                    res = str("#{0:02x}{1:02x}{2:02x}".format(int(colors[i][j][0]),int(colors[i][j][1]),int(colors[i][j][2])))
+                    colorshex[i][j] = res[1:]
+            with open("bar.csv", 'w') as resultFile:
+                wr = csv.writer(resultFile, dialect='excel', delimiter =';')
+                wr.writerows(colorshex)  
+            '''
+            
             red_points = self.find_red(colors)
             if len(red_points) == 1:
                 print("there should be a red point now")
-                
+                try:
+                    p = self.Redpoint.pop(0)
+                    p.remove()
+                except:
+                    pass
+                self.Redpoint = ax.plot(red_points[0][1], border_y - red_points[0][0], marker='o', color='red', linewidth=1)
                 
             if self.findEquation:
-                print("find equation")
                 self.findEquation = False
                 ## add z coordinate
                 frame1 = frame.shape[1]
@@ -237,6 +259,7 @@ class vlakvergelijking(ModuleTemplate):
                     points.append([i,j])
 
         print("len points", len(points))
+        print("all red points", points)
         ## find key points
         #  for i in points:
         res = []

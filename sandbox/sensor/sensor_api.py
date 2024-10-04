@@ -209,16 +209,26 @@ class Sensor:
         crop = frame[self.s_bottom:-self.s_top, self.s_left:-self.s_right]
         return crop
         
-    def crop_colors(self, frame: numpy.ndarray) -> numpy.ndarray:
+    def crop_colors(self, frame: numpy.ndarray, colors:numpy.ndarray) -> numpy.ndarray:
         """ Crops the data frame accoreding to the margins set up in the calibration relative to the
             size of the colors frame """
-            
-        bottom = round(self.s_bottom *  self.c_height / self.s_height)
-        top = round(self.s_top *  self.c_height / self.s_height)
-        right = round(self.s_right *  self.c_width / self.s_width)
-        left = round(self.s_left *  self.c_width / self.s_width) 
-        crop = frame[top: -bottom, right: -left]
-        return crop
+        width_f = frame.shape[0] - self.s_left - self.s_right
+        height_f = frame.shape[1] - self.s_top - self.s_bottom
+        
+        cropped_colors = colors[110:-250, 453: -405]
+        
+        width_c = cropped_colors.shape[0]
+        height_c = cropped_colors.shape[1]
+        
+        ratio_x = width_c/width_f
+        ratio_y = height_c/ height_f
+        
+        new_colors = numpy.zeros([width_f, height_f, 3])
+        
+        for i in range(new_colors.shape[0]):
+            for j in range(new_colors.shape[1]):
+                new_colors[i][j] = cropped_colors[round(i*ratio_x)][round(j*ratio_y) ]
+        return new_colors
             
 
     def crop_frame_workaround(self, frame: numpy.ndarray) -> numpy.ndarray:
@@ -267,8 +277,9 @@ class Sensor:
 
     def get_color(self) -> numpy.ndarray:
         colors = self.Sensor.get_color()
+        frame = self.get_raw_frame(self.filter)
         if self.crop:
-            colors = self.crop_colors(colors)
+            colors = self.crop_colors(frame, colors)
         if False: #self.clip:
             colors = self.clip_frame(colors)
         if False: #self.invert:
