@@ -11,7 +11,7 @@ class Sensor:
     """
     Wrapping API-class
     """
-    def __init__(self, calibsensor: str = None, name: str = 'dummy', crop_values: bool = True,
+    def __init__(self, calibsensor: str = None, calibcolor: str = None, name: str = 'dummy', crop_values: bool = True,
                  clip_values: bool = True, gauss_filter: bool = True,
                  n_frames: int = 3, gauss_sigma: int = 3, invert: bool = True, **kwargs):
         """
@@ -29,6 +29,7 @@ class Sensor:
             **kwargs:
         """
         self.json_filename = calibsensor
+        self.json_color_filename = calibcolor
         self.version = '2.1.s'
         if calibsensor is None:
             self.s_name = name
@@ -40,10 +41,17 @@ class Sensor:
             self.s_max = 1500
             self.s_width = 512
             self.s_height = 424
+            self.c_top = 10
+            self.c_right = 10
+            self.c_bottom = 10
+            self.c_left = 10
+            self.c_width = 1080
+            self.c_height = 1920
             self.box_width = 1000
             self.box_height = 800
         else:
             self.load_json(calibsensor)
+            self.load_color_json(calibcolor)
 
         if name == 'kinect_v1':
             from .kinectV1 import KinectV1
@@ -199,6 +207,63 @@ class Sensor:
             json.dump(data, calibration_json)
         logger.info('JSON configuration file saved: %s' % str(file))
 
+    def load_color_json(self, file: str):
+        """
+         Load a calibration file (.JSON format) and actualizes the panel parameters
+         Args:
+             file: address of the calibration to load
+
+         Returns:
+
+        """
+
+        def json_load(dict_data):
+            if dict_data['version'] == self.version:
+                self.c_top = dict_data['c_top']
+                self.c_right = dict_data['c_right']
+                self.c_bottom = dict_data['c_bottom']
+                self.c_left = dict_data['c_left']
+                self.c_width = dict_data["c_frame_width"] + dict_data['c_right'] + dict_data['c_left']
+                self.c_height = dict_data["c_frame_height"] + dict_data['c_top'] + dict_data['c_bottom']
+                self.box_width = dict_data['box_width']
+                self.box_height = dict_data['box_height']
+                logger.info("JSON configuration loaded for color sensor.")
+            else:
+                logger.warning("JSON configuration incompatible."
+                               "\nPlease select a valid calibration file or start a new calibration!")
+
+        if os.path.isfile(file):
+            with open(file) as calibration_json:
+                data = json.load(calibration_json)
+                json_load(data)
+        else:
+            data = json.loads(file)
+            json_load(data)
+        return True
+        
+    def save_color_json(self, file: str='color_calibration.json'):
+        """
+        Saves the current state of the sensor in a .JSON calibration file
+        Args:
+            file: address to save the calibration
+
+        Returns:
+
+        """
+        print("saving it")
+        with open(file, "w") as calibration_json:
+            data = {"version": self.version,
+                    "c_top": self.c_top,
+                    "c_right": self.c_right,
+                    "c_bottom": self.c_bottom,
+                    "c_left": self.c_left,
+                    "c_frame_width": self.c_width - self.c_left - self.c_right,
+                    "c_frame_height": self.c_height - self.c_bottom - self.c_top,
+                    "box_width": self.box_width,
+                    "box_height": self.box_height}
+            json.dump(data, calibration_json)
+        logger.info('JSON configuration file saved: %s' % str(file))
+    
     def crop_frame(self, frame: numpy.ndarray) -> numpy.ndarray:
         """ Crops the data frame according to the horizontal margins set up in the calibration
         """
@@ -215,7 +280,7 @@ class Sensor:
         width_f = frame.shape[0] - self.s_left - self.s_right
         height_f = frame.shape[1] - self.s_top - self.s_bottom
         
-        cropped_colors = colors[110:-250, 453: -405]
+        cropped_colors = colors[self.c_top:-self.c_bottom, self.c_right: -self.c_left]
         
         width_c = cropped_colors.shape[0]
         height_c = cropped_colors.shape[1]

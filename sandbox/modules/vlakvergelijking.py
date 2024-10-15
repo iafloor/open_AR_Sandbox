@@ -257,9 +257,6 @@ class vlakvergelijking(ModuleTemplate):
             for j in range(colors.shape[1]):
                 if colors[i][j][0] > 200 and colors[i][j][1] < 150 and colors[i][j][2] < 150: # if red enough, add to list
                     points.append([i,j])
-
-        print("len points", len(points))
-        print("all red points", points)
         ## find key points
         #  for i in points:
         res = []
@@ -274,6 +271,7 @@ class vlakvergelijking(ModuleTemplate):
                         points[id] = []
             res = [ele for ele in points if ele != []]
         print(res)
+        print("number of distinct red points", len(res))
         # if we have found 3 points, we can make an equation
         if len(res) == 1:
             print("found one red point, no equation made")
