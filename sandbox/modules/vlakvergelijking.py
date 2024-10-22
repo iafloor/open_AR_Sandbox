@@ -115,8 +115,15 @@ class vlakvergelijking(ModuleTemplate):
                 x = self.translate_x(border_x - self.red_points[0][1], border_x)
                 y = self.translate_y(self.red_points[0][0], border_y)
                 print(self.red_points[0][2])
-                p = np.array([x,y, self.translate_z(self.red_points[0][2], 100)])
+                p = np.array([x,y, self.translate_z(self.red_points[0][2], 300)])
                 print("p", p)
+                
+                print("frame", frame[0][0])
+                df = pd.DataFrame(frame)
+                df = df.astype(float).round(3)
+                df.to_csv("foo.csv", sep=';', header=False)
+                
+                            
             ## if there are enough, we can find the equation
             if len(self.red_points) == 3:
             
@@ -127,7 +134,9 @@ class vlakvergelijking(ModuleTemplate):
                 ## find coëfficients of plane through min max and 50,50
                 translated_points = []
                 for i in range(3):
-                    p = np.array([self.translate_x(self.red_points[i][0], border_x), self.translate_y(self.red_points[i][1], border_y), self.translate_z(self.red_points[i][2], 100)])
+                    x = self.translate_x(border_x - self.red_points[i][1], border_x)
+                    y = self.translate_y(self.red_points[i][0], border_y)
+                    p = np.array([x, y, self.translate_z(self.red_points[i][2], 300)])
                     translated_points.append(p)
                 print("translated_points", translated_points)
                 ## finding the equation
@@ -156,8 +165,9 @@ class vlakvergelijking(ModuleTemplate):
                 ## find coëfficients of plane through min max and 50,50
                 translated_points = []
                 for i in range(3):
-                    
-                    p = np.array([x, y, self.translate_z(self.red_points[i][2], 100)])
+                    x = self.translate_x(border_x - self.red_points[i][1], border_x)
+                    y = self.translate_y(self.red_points[i][0], border_y)
+                    p = np.array([x, y, self.translate_z(self.red_points[i][2], 300)])
                     translated_points.append(p)
             
             ## if not, we print that we did not have enough red points and to try again.
@@ -233,7 +243,6 @@ class vlakvergelijking(ModuleTemplate):
         for i in range(colors.shape[0]): # loop through all pixels
             for j in range(colors.shape[1]):
                 if colors[i][j][0] > colors[i][j][1] * 2 and colors[i][j][0] > colors[i][j][2] * 2: # if red enough, add to list
-                    print("the color", colors[i][j])
                     points.append([i,j])
         ## find key points
         #  for i in points:
@@ -346,7 +355,6 @@ class vlakvergelijking(ModuleTemplate):
         self._widget_show_red_points = pn.widgets.Button(name='Show red points', button_type='primary')
         self._widget_show_red_points.param.watch(self._callback_show_red_points, 'value', onlychanged=False)
         
-
     def show_widgets(self):
         self._create_widgets()
         panel = pn.Column("### Widgets for vlak vergelijking",
