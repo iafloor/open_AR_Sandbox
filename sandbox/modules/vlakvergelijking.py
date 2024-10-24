@@ -104,21 +104,16 @@ class vlakvergelijking(ModuleTemplate):
         
         ## find the plane indicated by three red tokens
         if self.plane_equation:
-            self.plane_equation = False
             ## first we need to find the red points
             self.red_points = self.find_red(colors)
             print(self.red_points)
             
             if len(self.red_points) == 1:
-                print("border x, y", border_x, border_y)
                 self.red_points[0].append(frame[self.red_points[0][0],self.red_points[0][1]])
                 x = self.translate_x(border_x - self.red_points[0][1], border_x)
                 y = self.translate_y(self.red_points[0][0], border_y)
-                print(self.red_points[0][2])
                 p = np.array([x,y, self.translate_z(self.red_points[0][2], 300)])
-                print("p", p)
                 
-                print("frame", frame[0][0])
                 df = pd.DataFrame(frame)
                 df = df.astype(float).round(3)
                 df.to_csv("foo.csv", sep=';', header=False)
@@ -131,14 +126,13 @@ class vlakvergelijking(ModuleTemplate):
                 for i in range(len(self.red_points)):
                     self.red_points[i].append(frame[self.red_points[i][0],self.red_points[i][1]])
 
-                ## find coëfficients of plane through min max and 50,50
+                ## find coordinates of three red points
                 translated_points = []
-                for i in range(3):
+                for i in range(len(self.red_points)):
                     x = self.translate_x(border_x - self.red_points[i][1], border_x)
                     y = self.translate_y(self.red_points[i][0], border_y)
                     p = np.array([x, y, self.translate_z(self.red_points[i][2], 300)])
                     translated_points.append(p)
-                print("translated_points", translated_points)
                 ## finding the equation
                 self.calc_plane_equation(translated_points, ax)
                 
@@ -151,7 +145,6 @@ class vlakvergelijking(ModuleTemplate):
                 
         ## find the vector indicated by two red tokens
         if self.vector_equation:
-            self.vector_equation = False
         
             ## first we need to find the red points
             self.red_points = self.find_red(colors)
@@ -162,14 +155,22 @@ class vlakvergelijking(ModuleTemplate):
                 for i in range(len(self.red_points)):
                     self.red_points[i].append(frame[self.red_points[i][0],self.red_points[i][1]])
 
-                ## find coëfficients of plane through min max and 50,50
+                print("points", self.red_points[0], self.red_points[1])
+                ## find coordinates of two red points
                 translated_points = []
-                for i in range(3):
+                for i in range(len(self.red_points)):
                     x = self.translate_x(border_x - self.red_points[i][1], border_x)
                     y = self.translate_y(self.red_points[i][0], border_y)
-                    p = np.array([x, y, self.translate_z(self.red_points[i][2], 300)])
+                    p = np.array([x, y, self.translate_z(self.red_points[i][2] - 100, 100)])
                     translated_points.append(p)
-            
+                    
+                self.calc_vec_equation(translated_points, ax, border_y)
+            elif len(self.red_points) == 1:
+                ## add z coordinate
+                self.red_points[0].append(frame[self.red_points[0][0], self.red_points[0][1]])
+                
+                ## add second point right below the first
+                self.red_points.append([self.red_points[0][0], self.red_points[0][1],self.red_points[0][2]-10])
             ## if not, we print that we did not have enough red points and to try again.
             else:
                 if len(self.red_points) > 2:
@@ -180,7 +181,6 @@ class vlakvergelijking(ModuleTemplate):
         ## show red points
         if self.ShowRedPoints:
             self.ShowRedPoints = False
-            print("show red points", self.red_points)
             self.show_red_points(border_y, ax)
         
         ## random plane
@@ -228,7 +228,7 @@ class vlakvergelijking(ModuleTemplate):
                     result = result + "- "
                 else:
                     result = result + "+ "
-                result = result + str(abs(round(equation[i] * 10))) + parameters[i]
+                result = result + str(abs(round(equation[i] * 10,1))) + parameters[i]
         result = result + "= 0"
         return result
     
@@ -254,7 +254,7 @@ class vlakvergelijking(ModuleTemplate):
                 if i == j or i == [] or j == []:
                    continue
                 else:
-                    if abs(i[0] - j[0]) < 15 and abs(i[1] - j[1]) < 15: # if closer to each other than 10 pixels, remove one
+                    if abs(i[0] - j[0]) < 10 and abs(i[1] - j[1]) < 10: # if closer to each other than 10 pixels, remove one
                         points[id] = []
             res = [ele for ele in points if ele != []]
         print(res)
@@ -306,11 +306,43 @@ class vlakvergelijking(ModuleTemplate):
         equation = Plane(point=translated_points[0].tolist(), normal=normal.tolist()).cartesian()
         result = self.parameters_to_string(equation)
         try:
-            self.equation .remove()
+            self.equation.remove()
         except:
             pass
         self.equation = ax.annotate("Equation:" + result, (100, 3), color="#bf0707", fontsize=14, rotation=180)
         
+        ## other format
+        equation = Plane(point=translated_points[0].tolist(), normal=normal.tolist()).cartesian()
+        z_1_equation = [round(round(equation[0]*10)/round(equation[2]*10),2), round(round(equation[1]*10)/round(equation[2]*10)), 1, round(round(equation[3]*10)/round(equation[2]*10))]
+        result = "z = " + str(z_1_equation[0]) + "x +" + str(z_1_equation[1]) + "y +" + str(z_1_equation[3])  
+        try:
+            self.alt_equation.remove()
+        except:
+            pass
+        self.alt_equation = ax.annotate("Equation:" + result, (100, 10), color="#bf0707", fontsize=14, rotation=180)
+        
+    def calc_vec_equation(self, translated_points, ax, border_y):
+        ## find vector representation
+        vec = translated_points[1] - translated_points[0]
+        
+        print("vector", vec)
+        result = "(" + str(vec[0]) + ", " + str(vec[1]) + ", " + str(vec[2]) + ")"
+        try: 
+            e = self.vec_equation.pop(0)
+            e.remove()
+        except:
+            pass
+        self.vec_equation = ax.annotate("Vector:" + result, (100,3), color="#bf0707", fontsize=14, rotation=180)
+        
+        ## print the vector
+        try:
+            v = self.vec.pop(0)
+            v.remove()
+        except:
+            pass
+            
+        self.vec = ax.plot([self.red_points[1][1], self.red_points[1][1]], [border_y - self.red_points[1][0], border_y - self.red_points[1][0]+ 10] , marker='o', color='red', linewidth=1)
+    
     def _create_widgets(self):
         """
            Create and show the widgets associated to this module
@@ -326,10 +358,10 @@ class vlakvergelijking(ModuleTemplate):
         self._widget_axes = pn.widgets.Checkbox(name='Show axes', value=self.axes)
         self._widget_axes.param.watch(self._callback_axes, 'value', onlychanged=False)
 
-        self._widget_plane_eq = pn.widgets.Button(name='Find plane equation', button_type='primary')
+        self._widget_plane_eq = pn.widgets.Checkbox(name='Find plane equation', value=self.plane_equation)
         self._widget_plane_eq.param.watch(self._callback_plane_eq, 'value', onlychanged=False)
         
-        self._widget_vec_eq = pn.widgets.Button(name='Find vector equation', button_type='primary')
+        self._widget_vec_eq = pn.widgets.Checkbox(name='Find vector equation', value=self.vector_equation)
         self._widget_vec_eq.param.watch(self._callback_vec_eq, 'value', onlychanged=False)
 
         self._widget_rand_eq = pn.widgets.Button(name='get random equation', button_type='primary')
@@ -371,6 +403,13 @@ class vlakvergelijking(ModuleTemplate):
                           )
         return panel
 
+    def widgets_exercise1(self):
+        self._create_widgets()
+        panel = pn.Column("### Widgets for exercise 1",
+                            self._widget_color,
+                            self._widget_contour,
+                            self._widget_axes)
+        return panel
     def _callback_color(self, event): self.color = event.new
 
     def _callback_contour(self, event): self.contour = event.new
