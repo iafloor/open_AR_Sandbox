@@ -84,7 +84,7 @@ class ContourLinesModule:
         self.contours_width_minor = contours_width_minor
         logger.info("ContourLinesModule loaded successfully")
 
-    def update(self, sb_params: dict):
+    def update(self, sb_params: dict, w_params:dict):
         active = sb_params.get('active_contours')
         active = bool(active * self.active_contours)
         ax = sb_params.get('ax')
@@ -122,7 +122,7 @@ class ContourLinesModule:
                 self.delete_contourns(ax)
             self._active = active
 
-        return sb_params
+        return [sb_params, w_params]
 
     @staticmethod
     def delete_contourns(ax):

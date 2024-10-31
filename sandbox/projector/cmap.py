@@ -50,7 +50,7 @@ class CmapModule:
 
         logger.info("CmapModule loaded successfully")
 
-    def update(self, sb_params: dict):
+    def update(self, sb_params: dict, w_params: dict):
         active = sb_params.get('active_cmap')
         active_shade = sb_params.get('active_shading')
         ax = sb_params.get('ax')
@@ -109,7 +109,7 @@ class CmapModule:
             if self._col is not None and self._col() in ax.images:
                 ax.images.remove(self._col)
 
-        return sb_params
+        return [sb_params, w_params]
 
     def set_extent(self, extent):
         self.col.set_extent(extent[:4])

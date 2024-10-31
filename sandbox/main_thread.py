@@ -18,6 +18,7 @@ dateTimeObj = datetime.now()
 from sandbox.projector import Projector, ContourLinesModule, CmapModule
 from sandbox.sensor import Sensor
 from sandbox.markers import MarkerDetection
+from sandbox.modules import widgets
 from sandbox import set_logger
 logger = set_logger(__name__)
 
@@ -49,7 +50,7 @@ class MainThread:
         self.projector.clear_axes()
         self.contours = ContourLinesModule(extent=self.sensor.extent, **kwargs_contourlines)
         self.cmap_frame = CmapModule(extent=self.sensor.extent, **kwargs_cmap)
-
+        self.plane_widges = widgets()
         # start the modules
         self.modules = collections.OrderedDict({'CmapModule': self.cmap_frame, 'ContourLinesModule': self.contours})
         self._modules = collections.OrderedDict({'CmapModule': self.cmap_frame, 'ContourLinesModule': self.contours})
@@ -87,6 +88,12 @@ class MainThread:
                           'trigger': self.projector.trigger,
                           # TODO: Carefull with this use because it can make to paint the figure incompletely
                           'del_contour': True, }
+
+        self.w_params = {'Nexercise': 0,
+                         'start': False,
+                         'color': False,
+                         'random_vector': False,
+                         'vector_equation': False}
         # 'freeze_frame': False}
 
         self.previous_frame = self.sb_params['frame']
@@ -171,7 +178,9 @@ class MainThread:
             _actual = [name for name in self.modules.keys() if name not in _always]
             for key in list(
                     _actual + _always):  # TODO: maybe use OrderedDict to put this modules always at the end of the iteration
-                self.sb_params = self.modules[key].update(self.sb_params)
+                [a,b] = self.modules[key].update(self.sb_params, self.w_params)
+                self.sb_params = a
+                self.w_params = b
             self.lock.release()
         except Exception as e:
             traceback.print_exc()

@@ -42,9 +42,17 @@ class vlakvergelijking(ModuleTemplate):
         self.x = 100
         self.y = 100
         self.get_random_equation = False
+
+        ## variables for exercises in general
+        self.NExercise = 0
+        self.start = True
+
+        ## variables for exercise 1
+        self.random_vector = False
+        ## variables for exercise 2
         logger.info("VlakModules loaded successfully")
 
-    def update(self, sb_params: dict):
+    def update(self, sb_params: dict, w_params: dict):
 
         # if color or contour is false, we want to not show them
         sb_params['color'] = self.color
@@ -54,7 +62,15 @@ class vlakvergelijking(ModuleTemplate):
         ax = sb_params.get('ax')
         cmap = sb_params.get("cmap")
         colors = sb_params['colors']
-     
+
+        self.NExercise = w_params['Nexercise']
+        self.start = w_params['start']
+        self.color = w_params['color']
+
+        # after sending a request to make a random vector, end the request
+        self.random_vector = w_params['random_vector']
+        self.random_vector = False
+        self.vector_equation = w_params['vector_equation']
 
         frame, ax, cmap, extent = self.plot(frame, ax, colors, cmap, extent)
 
@@ -68,12 +84,20 @@ class vlakvergelijking(ModuleTemplate):
         else:
             sb_params['active_cmap'] = True
             sb_params['active_shading'] = False
-        return sb_params
+        return [sb_params, w_params]
 
 
     def plot(self, frame, ax, colors, cmap, extent):
-    
-
+        if self.NExercise == 0:
+            self.plot_tutorial(ax)
+        elif self.NExercise == 1:
+            self.plot_exercise_1(ax)
+        elif self.NExercise == 2:
+            self.plot_exercise_2(ax)
+        elif self.NExercise == 3:
+            self.plot_exercise_3(ax)
+        else:
+            self.plot_exercise_4(ax, colors)
         border_x = frame.shape[1]
         border_y = frame.shape[0]
         # add gridlines
@@ -100,7 +124,7 @@ class vlakvergelijking(ModuleTemplate):
         except:
             pass
         if self.drawPoint:
-            self.p = ax.plot(self.y, border_y - self.x, marker='o', color='red', linewidth=1)
+            self.p = ax.plot(self.y, border_y - self.x, marker='o', fontsize=14, color='red', linewidth=1)
         
         ## find the plane indicated by three red tokens
         if self.plane_equation:
@@ -189,11 +213,110 @@ class vlakvergelijking(ModuleTemplate):
 
         return frame, ax, cmap, extent
 
+    def plot_tutorial(self, ax):
+        print(self.NExercise)
+        try:
+            self.description.remove()
+        except:
+            pass
+        if self.start:
+            self.color = False
+            self.contour = False
+            self.description = ax.annotate("This is the tutorial.",
+                                           (80, 80), fontsize=28, color="black", rotation=180)
+        else:
+            self.color = True
+            self.contour = True
+
+    def plot_exercise_1(self, ax):
+        try:
+            self.description.remove()
+        except:
+            pass
+        if self.start:
+            self.color = False
+            self.contour = False
+            self.description = ax.annotate("Move the vector in such a way \n that the height lines on \n the vector disappear.",
+                                           (80, 80), fontsize=28, color="black", rotation=180)
+        else:
+            self.color = True
+            self.contour = True
+
+    def plot_exercise_2(self, ax):
+        try:
+            self.description.remove()
+        except:
+            pass
+        if self.start:
+            self.description = ax.annotate(
+                "Move the vector in such a way \n that the height lines on the vector \n are parallel to the y-axis.",
+                (80, 80), fontsize=28, color="black", rotation=180)
+        else:
+            self.color = True
+            self.contour = True
+
+    def plot_exercise_3(self, ax):
+        try:
+            self.description.remove()
+        except:
+            pass
+        if self.start:
+            self.description = ax.annotate(
+                "Move the vector in such a way \n that the height lines on the vector \n are parallel to the x-axis.",
+                (80, 80), fontsize=28, color="black", rotation=180)
+        else:
+            self.color = True
+            self.contour = True
+
+    def plot_exercise_4(self, ax, colors):
+        ''' This exercise evolves around '''
+        self.color = False
+        self.contour = False
+        self.axes = True
+        try:
+            self.description.remove()
+        except:
+            pass
+        if self.start:
+            self.description = ax.annotate("Using the two vector parts, \n make a vector equal \n to the vector AB.", (80, 80), fontsize=28, color="black", rotation=180)
+
+        ## print a random vector
+        border_x = colors.shape[0]
+        border_y = colors.shape[1]
+        if self.random_vector:
+            self.random_vector = False
+            a = [random.randint(-4,4), random.randint(-4,4)]
+            b = [random.randint(-4,4) , random.randint(-4,4)]
+            vec1 = [border_y - self.detranslate_x(a[0], border_y), border_x - self.detranslate_y(a[1], border_x)]
+            vec2 = [border_y - self.detranslate_x(b[0], border_y), border_x - self.detranslate_y(b[1], border_x)]
+            print(a,b)
+            print(vec1,vec2)
+            try:
+                v = self.vec.pop(0)
+                v.remove()
+            except:
+                pass
+            self.vec = ax.plot([vec1[0], vec2[0]],
+                           [vec1[1], vec2[1]], marker='o',
+                           color='red', linewidth=1)
+
+        ## print vector by student
+        ## find the vector indicated by two red tokens
+        if self.vector_equation:
+            self.vector_finding(colors, ax, y-x)
+
     def translate_x(self, x, total):
         return round(x*12/total - 6)
 
+    def detranslate_x(self, x, total):
+        print("x?", x)
+        return round((x+6)*total/12)
+
     def translate_y(self, y, total):
         return round(y * 8/ total - 4)
+
+    def detranslate_y(self,y,total):
+        return round((y + 4) * total / 8)
 
     def translate_z(self, z, total):
         return round(z * 8 / total - 4)
@@ -261,6 +384,41 @@ class vlakvergelijking(ModuleTemplate):
         print("number of distinct red points", len(res))
         return res
 
+    def vector_finding(self, colors, ax, dummy_vec):
+        ## first we need to find the red points
+        self.red_points = self.find_red(colors)
+
+        ## if there are enough, we can find the equation
+        if len(self.red_points) == 2:
+            ## add z coordinate
+            for i in range(len(self.red_points)):
+                self.red_points[i].append(frame[self.red_points[i][0], self.red_points[i][1]])
+
+            print("points", self.red_points[0], self.red_points[1])
+            ## find coordinates of two red points
+            translated_points = []
+            for i in range(len(self.red_points)):
+                x = self.translate_x(border_x - self.red_points[i][1], border_x)
+                y = self.translate_y(self.red_points[i][0], border_y)
+                p = np.array([x, y, self.translate_z(self.red_points[i][2] - 100, 100)])
+                translated_points.append(p)
+
+            self.calc_vec_equation(translated_points, ax, border_y, dummy_vec)
+            return vec
+        elif len(self.red_points) == 1:
+            ## add z coordinate
+            self.red_points[0].append(frame[self.red_points[0][0], self.red_points[0][1]])
+
+            ## add second point right below the first
+            self.red_points.append([self.red_points[0][0], self.red_points[0][1], self.red_points[0][2] - 10])
+        ## if not, we print that we did not have enough red points and to try again.
+        else:
+            if len(self.red_points) > 2:
+                print("too many points found, try again")
+            else:
+                print("not enough points found, try again")
+            return [0, 0]
+
     def show_red_points(self, border_y, ax):
         ''' Show red points on the height map. To make sure we can use this function to show 1, 2 and 3 points. We just try and otherwise through an exception'''
         try:
@@ -321,7 +479,7 @@ class vlakvergelijking(ModuleTemplate):
             pass
         self.alt_equation = ax.annotate("Equation:" + result, (100, 10), color="#bf0707", fontsize=14, rotation=180)
         
-    def calc_vec_equation(self, translated_points, ax, border_y):
+    def calc_vec_equation(self, translated_points, ax, border_y, dummy_vec):
         ## find vector representation
         vec = translated_points[1] - translated_points[0]
         
@@ -332,7 +490,11 @@ class vlakvergelijking(ModuleTemplate):
             e.remove()
         except:
             pass
-        self.vec_equation = ax.annotate("Vector:" + result, (100,3), color="#bf0707", fontsize=14, rotation=180)
+        if vec == dummy_vec:
+            color="#09db3d"
+        else:
+            color="#bf0707"
+        self.vec_equation = ax.annotate("Vector:" + result, (100,3), color=color, fontsize=14, rotation=180)
         
         ## print the vector
         try:
@@ -342,90 +504,6 @@ class vlakvergelijking(ModuleTemplate):
             pass
             
         self.vec = ax.plot([self.red_points[1][1], self.red_points[1][1]], [border_y - self.red_points[1][0], border_y - self.red_points[1][0]+ 10] , marker='o', color='red', linewidth=1)
-    
-    def _create_widgets(self):
-        """
-           Create and show the widgets associated to this module
-           Returns:
-               widget
-           """
-        self._widget_color = pn.widgets.Checkbox(name='Show colors', value=self.color)
-        self._widget_color.param.watch(self._callback_color, 'value', onlychanged=False)
 
-        self._widget_contour = pn.widgets.Checkbox(name='Show contours', value=self.contour)
-        self._widget_contour.param.watch(self._callback_contour, 'value', onlychanged=False)
-
-        self._widget_axes = pn.widgets.Checkbox(name='Show axes', value=self.axes)
-        self._widget_axes.param.watch(self._callback_axes, 'value', onlychanged=False)
-
-        self._widget_plane_eq = pn.widgets.Checkbox(name='Find plane equation', value=self.plane_equation)
-        self._widget_plane_eq.param.watch(self._callback_plane_eq, 'value', onlychanged=False)
-        
-        self._widget_vec_eq = pn.widgets.Checkbox(name='Find vector equation', value=self.vector_equation)
-        self._widget_vec_eq.param.watch(self._callback_vec_eq, 'value', onlychanged=False)
-
-        self._widget_rand_eq = pn.widgets.Button(name='get random equation', button_type='primary')
-        self._widget_rand_eq.param.watch(self._callback_equation, 'value', onlychanged=False)
-
-        self._widget_x = pn.widgets.IntSlider(name='y',
-                                                  bar_color="#0000ff",
-                                                  value=100,
-                                                  start=1,
-                                                  end=400)
-        self._widget_x.param.watch(self._callback_x, 'value', onlychanged=False)
-
-        self._widget_y = pn.widgets.IntSlider(name='x',
-                                                  bar_color="#0000ff",
-                                                  value=100,
-                                                  start=1,
-                                                  end=400)
-        self._widget_y.param.watch(self._callback_y, 'value', onlychanged=False)        
-        
-        self._widget_point = pn.widgets.Checkbox(name='draw point', value=self.drawPoint)
-        self._widget_point.param.watch(self._callback_point, 'value', onlychanged=False)
-        
-        self._widget_show_red_points = pn.widgets.Button(name='Show red points', button_type='primary')
-        self._widget_show_red_points.param.watch(self._callback_show_red_points, 'value', onlychanged=False)
-        
     def show_widgets(self):
-        self._create_widgets()
-        panel = pn.Column("### Widgets for vlak vergelijking",
-                          self._widget_color,
-                          self._widget_contour,
-                          self._widget_axes,
-                          self._widget_plane_eq,
-                          self._widget_vec_eq,
-                          self._widget_rand_eq,
-                          self._widget_x,
-                          self._widget_y,
-                          self._widget_point,
-                          self._widget_show_red_points
-                          )
-        return panel
-
-    def widgets_exercise1(self):
-        self._create_widgets()
-        panel = pn.Column("### Widgets for exercise 1",
-                            self._widget_color,
-                            self._widget_contour,
-                            self._widget_axes)
-        return panel
-    def _callback_color(self, event): self.color = event.new
-
-    def _callback_contour(self, event): self.contour = event.new
-
-    def _callback_axes(self, event): self.axes = event.new
-
-    def _callback_equation(self, event): self.get_random_equation = event.new
-
-    def _callback_plane_eq(self, event): self.plane_equation = event.new
-    
-    def _callback_vec_eq(self, event): self.vector_equation = event.new
-    
-    def _callback_x(self, event) : self.x = float(event.new)
-    
-    def _callback_y(self, event) : self.y = float(event.new)
-    
-    def _callback_point(self,event) : self.drawPoint = event.new
-    
-    def _callback_show_red_points(self, event) : self.ShowRedPoints = event.new
+        pass

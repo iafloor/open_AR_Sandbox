@@ -5,6 +5,7 @@ from .topography import TopoModule
 from .prototyping import PrototypingModule
 from .search_methods import SearchMethodsModule
 from .vlakvergelijking import vlakvergelijking
+from .widgets import widgets
 
 
 if __name__ == '__main__':
