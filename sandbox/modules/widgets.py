@@ -31,6 +31,7 @@ class widgets():
 
     def widgets_tutorial(self):
         self.NExercise = 0
+        self.start = True
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 1",
                           self._widget_start)
@@ -38,6 +39,7 @@ class widgets():
 
     def widgets_exercise1(self):
         self.NExercise = 1
+        self.start = True
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 1",
                           self._widget_start)
@@ -45,6 +47,7 @@ class widgets():
 
     def widgets_exercise2(self):
         self.NExercise = 2
+        self.start = True
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 2",
                           self._widget_start)

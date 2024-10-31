@@ -4,6 +4,7 @@ from .load_save_topography import LoadSaveTopoModule
 from .topography import TopoModule
 from .prototyping import PrototypingModule
 from .search_methods import SearchMethodsModule
+from .exercises import exercises
 from .vlakvergelijking import vlakvergelijking
 from .widgets import widgets
 

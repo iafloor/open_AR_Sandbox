@@ -11,6 +11,7 @@ import csv
 from skspatial.objects import Plane
 from .template import ModuleTemplate
 from sandbox import set_logger
+from sandbox.modules import exercises
 logger = set_logger(__name__)
 
 
@@ -42,6 +43,7 @@ class vlakvergelijking(ModuleTemplate):
         self.x = 100
         self.y = 100
         self.get_random_equation = False
+        self.exercises = exercises()
 
         ## variables for exercises in general
         self.NExercise = 0
@@ -130,7 +132,6 @@ class vlakvergelijking(ModuleTemplate):
         if self.plane_equation:
             ## first we need to find the red points
             self.red_points = self.find_red(colors)
-            print(self.red_points)
             
             if len(self.red_points) == 1:
                 self.red_points[0].append(frame[self.red_points[0][0],self.red_points[0][1]])
@@ -179,7 +180,6 @@ class vlakvergelijking(ModuleTemplate):
                 for i in range(len(self.red_points)):
                     self.red_points[i].append(frame[self.red_points[i][0],self.red_points[i][1]])
 
-                print("points", self.red_points[0], self.red_points[1])
                 ## find coordinates of two red points
                 translated_points = []
                 for i in range(len(self.red_points)):
@@ -214,7 +214,6 @@ class vlakvergelijking(ModuleTemplate):
         return frame, ax, cmap, extent
 
     def plot_tutorial(self, ax):
-        print(self.NExercise)
         try:
             self.description.remove()
         except:
@@ -222,8 +221,7 @@ class vlakvergelijking(ModuleTemplate):
         if self.start:
             self.color = False
             self.contour = False
-            self.description = ax.annotate("This is the tutorial.",
-                                           (80, 80), fontsize=28, color="black", rotation=180)
+            self.description = ax.annotate(self.exercises.tutorial(), (40, 80), fontsize=28, color="black", rotation=180)
         else:
             self.color = True
             self.contour = True
@@ -236,8 +234,7 @@ class vlakvergelijking(ModuleTemplate):
         if self.start:
             self.color = False
             self.contour = False
-            self.description = ax.annotate("Move the vector in such a way \n that the height lines on \n the vector disappear.",
-                                           (80, 80), fontsize=28, color="black", rotation=180)
+            self.description = ax.annotate(self.exercises.exercise_1,(80, 80), fontsize=28, color="black", rotation=180)
         else:
             self.color = True
             self.contour = True
@@ -289,8 +286,7 @@ class vlakvergelijking(ModuleTemplate):
             b = [random.randint(-4,4) , random.randint(-4,4)]
             vec1 = [border_y - self.detranslate_x(a[0], border_y), border_x - self.detranslate_y(a[1], border_x)]
             vec2 = [border_y - self.detranslate_x(b[0], border_y), border_x - self.detranslate_y(b[1], border_x)]
-            print(a,b)
-            print(vec1,vec2)
+
             try:
                 v = self.vec.pop(0)
                 v.remove()
@@ -309,7 +305,6 @@ class vlakvergelijking(ModuleTemplate):
         return round(x*12/total - 6)
 
     def detranslate_x(self, x, total):
-        print("x?", x)
         return round((x+6)*total/12)
 
     def translate_y(self, y, total):
@@ -380,8 +375,6 @@ class vlakvergelijking(ModuleTemplate):
                     if abs(i[0] - j[0]) < 10 and abs(i[1] - j[1]) < 10: # if closer to each other than 10 pixels, remove one
                         points[id] = []
             res = [ele for ele in points if ele != []]
-        print(res)
-        print("number of distinct red points", len(res))
         return res
 
     def vector_finding(self, colors, ax, dummy_vec):
@@ -394,7 +387,6 @@ class vlakvergelijking(ModuleTemplate):
             for i in range(len(self.red_points)):
                 self.red_points[i].append(frame[self.red_points[i][0], self.red_points[i][1]])
 
-            print("points", self.red_points[0], self.red_points[1])
             ## find coordinates of two red points
             translated_points = []
             for i in range(len(self.red_points)):
@@ -483,7 +475,6 @@ class vlakvergelijking(ModuleTemplate):
         ## find vector representation
         vec = translated_points[1] - translated_points[0]
         
-        print("vector", vec)
         result = "(" + str(vec[0]) + ", " + str(vec[1]) + ", " + str(vec[2]) + ")"
         try: 
             e = self.vec_equation.pop(0)
