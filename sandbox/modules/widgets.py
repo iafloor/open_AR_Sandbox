@@ -8,7 +8,7 @@ class widgets():
     def __init__(self):
         pn.extension()
         self.NExercise = 0
-        self.start = False
+        self.start = True
         self.color = False
         self.axes = False
         self.contour = False
@@ -25,6 +25,7 @@ class widgets():
         w_params['start'] = self.start
         w_params['params'] = self.params
         w_params['random_vector'] = self.random_vector
+        self.random_vector = False
         w_params['vector_equation'] = self.vector_equation
 
         return [sb_params, w_params]
@@ -68,7 +69,7 @@ class widgets():
                           self._widget_random_vector,
                           self._widget_vec_eq)
         return panel
-    '''
+
     def widgets_exercise5(self):
         self.NExercise = 5
         self._create_widgets()
@@ -103,15 +104,6 @@ class widgets():
         panel = pn.Column("### Widgets for exercise 9",
                           self._widget_start)
         return panel
-
-    def widgets_exercise10(self):
-        self.NExercise = 10
-        self._create_widgets()
-        panel = pn.Column("### Widgets for exercise 10",
-                          self._widget_start)
-        return panel
-    '''
-
 
     def _create_widgets(self):
         """
