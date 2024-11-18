@@ -41,6 +41,7 @@ class vlakvergelijking(ModuleTemplate):
         self.height = 100
         self.drawPoint = False
         self.red_points = []
+        self.point = False
         self.x = 100
         self.y = 100
         self.lines = [0]*46
@@ -48,7 +49,7 @@ class vlakvergelijking(ModuleTemplate):
         self.exercises = exercises()
 
         ## variables for exercises in general
-        self.NExercise = 0
+        self.NExercise = -1
         self.start = True
 
         ## variables for exercise 1
@@ -70,6 +71,8 @@ class vlakvergelijking(ModuleTemplate):
         self.NExercise = w_params['Nexercise']
         self.start = w_params['start']
         self.color = w_params['color']
+        self.x = w_params['x']
+        self.y = w_params['y']
 
         # after sending a request to make a random vector, end the request
         self.random_vector = w_params['random_vector']
@@ -110,18 +113,13 @@ class vlakvergelijking(ModuleTemplate):
             self.plot_exercise_8(ax)
         elif self.NExercise == 9:
             self.plot_exercise_9(ax)
+        else:
+            self.plot_test(ax, colors)
         border_x = frame.shape[1]
         border_y = frame.shape[0]
         # add gridlines
         # vertical
         self.plot_axes(ax, border_x, border_y)
-        try:
-            p = self.p.pop(0)
-            p.remove()
-        except:
-            pass
-        if self.drawPoint:
-            self.p = ax.plot(self.y, border_y - self.x, marker='o', fontsize=14, color='red', linewidth=1)
 
         ## show red points
         if self.ShowRedPoints:
@@ -144,8 +142,9 @@ class vlakvergelijking(ModuleTemplate):
                         linewidth=0.5)
                 self.lines[i+ 39] =ax.annotate(-1 * i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black",
                                               rotation=180)
-            self.lines[44] = ax.plot([0, border_y], [border_x / 2, border_x / 2], marker='o', color='black', linewidth=1)
-            self.lines[45] = ax.plot([0, border_x], [border_y / 2, border_y / 2], marker='o', color='black', linewidth=1)
+           # there is a bug here. I don't know exactly what it is. Commented it out for now
+           # self.lines[44] = ax.plot([border_y,0], [border_y / 2, border_y / 2], marker='o', color='black', linewidth=1)
+           # self.lines[45] = ax.plot([0, border_x], [border_x / 2, border_x / 2], marker='o', color='black', linewidth=1)
         elif not self.axes and self.axesShown:
             try:
                 self.axesShown = False
@@ -162,7 +161,42 @@ class vlakvergelijking(ModuleTemplate):
     #                               Exercises
     #--------------------------------------------------------------------------
 
+    def plot_test(self, ax, colors):
+        # write all colors to file
+        np.savetxt("moo.csv", colors, delimiter=",") 
+        self.axes = True
+        border_y = colors.shape[1]
+        self.b = ax.plot(100, border_y - 100, marker='o', color='red', linewidth=1)
+        
+        # delete previous point
+        try:
+            pa = self.pointA.pop(0)
+            pa.remove()
+        except:
+            pass
+        # find and draw new point
+        try:
+            red = self.find_color(colors, 'red')
+            print("red points", red)
+            r = red[0]
+            print(colors[r[0], r[1]])
+            self.pointA = ax.plot(r[0], border_y - r[1], marker='o', color='red', linewidth=1)
+            print("point drawn")
+        except:
+            print("not enough red points")
+            
+        # delete point    
+        try:
+            pa = self.redPoint.pop(0)
+            pa.remove()
+        except:
+            pass
+            
+        # print new point
+        self.redPoint = ax.plot(self.x, self.y, marker='o', color='red', linewidth=1)
+       
     def plot_tutorial(self, ax):
+        print("tutorial")
         try:
             self.description.remove()
         except:
@@ -488,13 +522,12 @@ class vlakvergelijking(ModuleTemplate):
             rgb = [1,0,2]
         else: # blue
             rgb = [2,0,1]
-
         points = [] # list of all red points
         key_points = []
         if color_to_find == "red":
             for i in range(colors.shape[0]): # loop through all pixels
                 for j in range(colors.shape[1]):
-                    if colors[i][j][rgb[0]] > colors[i][j][rgb[1]] * 2 and colors[i][j][rgb[0]] > colors[i][j][rgb[2]] * 2: # if red/green/blue enough, add to list
+                    if colors[i][j][rgb[0]] > colors[i][j][rgb[1]] * 2 and colors[i][j][rgb[0]] > colors[i][j][rgb[2]] * 2 and colors[i][j][rgb[0]] > 100: # if red/green/blue enough, add to list
                         points.append([i,j])
         ## find key points
         #  for i in points:
@@ -506,7 +539,7 @@ class vlakvergelijking(ModuleTemplate):
                 if i == j or i == [] or j == []:
                    continue
                 else:
-                    if abs(i[0] - j[0]) < 10 and abs(i[1] - j[1]) < 10: # if closer to each other than 10 pixels, remove one
+                    if abs(i[0] - j[0]) < 15 and abs(i[1] - j[1]) < 15: # if closer to each other than 10 pixels, remove one
                         points[id] = []
             res = [ele for ele in points if ele != []]
         return res

@@ -7,7 +7,7 @@ class widgets():
     """ Class handles the widgets"""
     def __init__(self):
         pn.extension()
-        self.NExercise = 0
+        self.NExercise = -1
         self.start = True
         self.color = False
         self.axes = False
@@ -18,6 +18,9 @@ class widgets():
         self.drawPoint = False
         self.random_vector = False
         self.vec_eq = False
+        self.drawPoint = False
+        self.x = 0
+        self.y = 0
         logger.info("widgets created")
 
     def update(self, sb_params: dict, w_params: dict):
@@ -27,8 +30,18 @@ class widgets():
         w_params['random_vector'] = self.random_vector
         self.random_vector = False
         w_params['vector_equation'] = self.vector_equation
+        w_params['x'] = self.x
+        w_params['y'] = self.y
 
         return [sb_params, w_params]
+        
+    def widgets_test(self):
+        self.NExercise = -1
+        self._create_widgets()
+        panel = pn.Column("Widgets for test",
+                        self._widget_x,
+                        self._widget_y)
+        return panel
 
     def widgets_tutorial(self):
         self.NExercise = 0
@@ -135,14 +148,14 @@ class widgets():
         self._widget_rand_eq = pn.widgets.Button(name='get random equation', button_type='primary')
         self._widget_rand_eq.param.watch(self._callback_equation, 'value', onlychanged=False)
 
-        self._widget_x = pn.widgets.IntSlider(name='y',
+        self._widget_x = pn.widgets.IntSlider(name='x',
                                               bar_color="#0000ff",
                                               value=100,
                                               start=1,
                                               end=400)
         self._widget_x.param.watch(self._callback_x, 'value', onlychanged=False)
 
-        self._widget_y = pn.widgets.IntSlider(name='x',
+        self._widget_y = pn.widgets.IntSlider(name='y',
                                               bar_color="#0000ff",
                                               value=100,
                                               start=1,
