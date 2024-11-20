@@ -155,7 +155,10 @@ class vlakvergelijking(ModuleTemplate):
     #--------------------------------------------------------------------------
     #                               Exercises
     #--------------------------------------------------------------------------
-
+    def plot_calibrate_color(self, ax, colors):
+        pass
+    
+    
     def plot_test(self, ax, colors):        
         # use code below when difficulties calibrating color sensor
         '''
@@ -170,6 +173,7 @@ class vlakvergelijking(ModuleTemplate):
             wr.writerows(colorshex) '''
         ax.cla()    
         border = colors.shape[0]
+        print("color shape", colors.shape)
         # delete previous point
         try:
             pa = self.pointA.pop(0)
@@ -178,7 +182,7 @@ class vlakvergelijking(ModuleTemplate):
             pass
         # find and draw new point
         try:
-            red = self.find_color(colors, 'blue')
+            red = self.find_color(colors, 'red')
             r = red[0]
             self.pointA = ax.plot(r[1], border - r[0], marker='o', color='blue', linewidth=1)
         except:
@@ -247,6 +251,7 @@ class vlakvergelijking(ModuleTemplate):
             red = self.find_color(colors, 'red')
             if len(red) == 2:
                 points = self.add_z(red, frame)
+                
                 translated_points = self.translate(points, border_x, border_y)
                 self.calc_vec_equation(translated_points, points, ax, border_y, 0)
             else:
@@ -394,9 +399,10 @@ class vlakvergelijking(ModuleTemplate):
             if len(red) == 3:
                 points = self.add_z(red, frame)
                 translated_points = self.translate(points, border_x, border_y)
+                print(translated_points)
                 self.calc_plane_equation(translated_points, ax) 
             else:
-                pass
+                print("did not find enough or too many points", len(red))
             
 
     def plot_exercise_7(self, ax):
