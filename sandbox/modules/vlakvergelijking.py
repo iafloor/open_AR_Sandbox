@@ -28,6 +28,7 @@ class vlakvergelijking(ModuleTemplate):
 
         self.extent = extent
         self.frame = None
+        self.original_frame = None
         self.color = True
         self.contour = False
         self.axes = False
@@ -138,14 +139,14 @@ class vlakvergelijking(ModuleTemplate):
         self.axesShown = True
         # horizontal
         for i in range(-6,7):
-            self.lines[i+6] = ax.plot([border_x * (i + 6) / 12, border_x * (i + 6) / 12], [0, border_y], marker='o', color='black',
+            self.lines[i+6] = ax.plot([border_x * (i + 6) / 12, border_x * (i + 6) / 12], [0, border_y], marker='o', color='gray',
                 linewidth=0.5)
-            self.lines[i+19] = ax.annotate(-1 * i, (border_x * (i + 6) / 12 + 2, border_y / 2 - 5), color="black",
+            self.lines[i+19] = ax.annotate(-1 * i, (border_x * (i + 6) / 12 + 2, border_y / 2 - 5), color="gray",
                                       rotation=180)
         for i in range(-4, 5):
-            self.lines[i+ 30] = ax.plot([0, border_x], [border_y * (i + 4) / 8, border_y * (i + 4) / 8], marker='o', color='black',
+            self.lines[i+ 30] = ax.plot([0, border_x], [border_y * (i + 4) / 8, border_y * (i + 4) / 8], marker='o', color='gray',
                     linewidth=0.5)
-            self.lines[i+ 39] =ax.annotate(-1 * i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="black",
+            self.lines[i+ 39] =ax.annotate(-1 * i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="gray",
                                           rotation=180)
        # there is a bug here. I don't know exactly what it is. Commented it out for now
        # self.lines[44] = ax.plot([border_y,0], [border_y / 2, border_y / 2], marker='o', color='black', linewidth=1)
@@ -161,7 +162,6 @@ class vlakvergelijking(ModuleTemplate):
     
     def plot_test(self, ax, colors):        
         # use code below when difficulties calibrating color sensor
-        '''
         colorshex = [["" for i in range(colors.shape[1])] for j in range(colors.shape[0])]
         print("shape hex", len(colorshex))
         for i in range(len(colorshex)):
@@ -170,7 +170,7 @@ class vlakvergelijking(ModuleTemplate):
                 colorshex[i][j] = res[1:]
         with open("bar.csv", 'w') as resultFile:
             wr = csv.writer(resultFile, dialect='excel', delimiter =';')
-            wr.writerows(colorshex) '''
+            wr.writerows(colorshex)
         ax.cla()    
         border = colors.shape[0]
         print("color shape", colors.shape)
@@ -251,7 +251,6 @@ class vlakvergelijking(ModuleTemplate):
             red = self.find_color(colors, 'red')
             if len(red) == 2:
                 points = self.add_z(red, frame)
-                
                 translated_points = self.translate(points, border_x, border_y)
                 self.calc_vec_equation(translated_points, points, ax, border_y, 0)
             else:
@@ -298,7 +297,7 @@ class vlakvergelijking(ModuleTemplate):
                 pass
 
     def plot_exercise_4(self, ax, colors, frame):
-        ''' This exercise '''
+        ''' This exercise is redundant'''
         self.color = False
         self.contour = False
         self.axes = True
@@ -340,40 +339,45 @@ class vlakvergelijking(ModuleTemplate):
                 pass
 
     def plot_exercise_5(self, ax, colors, frame):
+        self.color = False
+        self.contour = False
         try:
             self.description.remove()
         except:
             pass
         if self.start:
-            self.color = False
-            self.contour = False
+            ax.cla()
             self.axes = False
             self.description = ax.annotate(
                 self.exercises.exercise_5(),
                 (40, 80), fontsize=28, color="black", rotation=180)
         else:
-            self.color = True
-            self.contour = True
-            self.axes = True
-
-        ## print a random vector
-        border_x = colors.shape[0]
-        border_y = colors.shape[1]
-        if self.random_vector:
-            self.random_vector = False
-            dummy_vec = [random.randint(-4, 4), random.randint(-4, 4), random.randint(-4, 4)]
-            try:
-                self.random_equation.remove()
+            ## print a random vector
+            border_y = colors.shape[0]
+            border_x = colors.shape[1]
+            
+            ax.cla()
+            self.plot_axes(ax, frame.shape[1], frame.shape[0])
+            
+            if self.random_vector:
+                self.random_vector = False
+                self.dummy_vec = [random.randint(-2, 2), random.randint(-2, 2), 2]
+            try:   
+                self.random_equation = ax.annotate("Create the vector: (" + str(self.dummy_vec[0]) + ", " + str(self.dummy_vec[1]) + ", " + str(self.dummy_vec[2]) + ")", (100, 5), color="#bf0707", fontsize=14, rotation=180)
             except:
                 pass
-            self.random_equation = ax.annotate("Vector: (" + dummy_vec[0] + ", " + dummy_vec[1] + ", " + dummy_vec[2] + ")", (10, 10), color="#bf0707", fontsize=14, rotation=180)
-
-        if self.vector_equation:
+            red = []
+            blue = []
             red = self.find_color(colors, 'red')
             blue = self.find_color(colors, 'blue')
-            points = self.add_z([a,b], frame)
-            translated_points = self.translate(points, border_x, border_y)
-            self.calc_vec_equation(translated_points, points, ax, border_y, dummy_vec, 0)
+            if len(red) == 1 and len(blue) == 1:
+                points = self.alternative_add_z([red[0],blue[0]], frame)
+                print(points)
+                translated_points = self.translate(points, border_x, border_y)
+                self.calc_vec_equation(translated_points, points, ax, border_y, 1)              
+            else:
+                print("something went wrong", red, blue)
+            self.general_depth(ax, frame)
 
     def plot_exercise_6(self, ax, colors, frame):
         ''' Find plane equation.'''
@@ -521,33 +525,77 @@ class vlakvergelijking(ModuleTemplate):
         return round(z * 8 / total - 4)
            
     def alternative_translate_z(self, z,x,y):
-        '''idea: look at all depth values '''
-        # compare to initialized depth
+        '''idea: look at depth values around point (x,y)'''
+        
+        
+        for i in range(4):
+            for j in range(30):
+                pass
         try:
             initial_depth = self.depth_array[5 - x][y + 3]
         except:
             print("ids", 5 - x,(y + 3))
             initial_depth = 0
-        return round((z - initial_depth)/10)
+        return round((z - initial_depth)/15)
 
     def add_z(self, points, frame):
         ''' Add z variable to x,y pair'''
         for i in range(len(points)):
-            points[i].append(frame[points[i][0], points[i][1]])
+            raw = self.original_frame[points[i][0]][points[i][1]] - frame[points[i][0]][points[i][1]]
+            points[i].append(round(raw/15))
         return points
 
+    def alternative_add_z(self, points, frame):
+        points[1].append(self.find_highest_point(frame, points[1][0],points[1][1]))
+        points[0].append(self.find_lowest_point(frame, points[0][0],points[0][1]))
+        return points
+        
     def translate(self, points, border_x, border_y):
         translated_points = []
         for i in range(len(points)):
             x = self.translate_x(border_x - points[i][1], border_x)
             y = self.translate_y(points[i][0], border_y)
-            p = np.array([x, y, self.alternative_translate_z(points[i][2], x, y)])
+            p = np.array([x, y, points[i][2]])
             translated_points.append(p)
         return translated_points
+        
+    def find_highest_point(self, frame, x, y):
+        highest_z = 0
+        print("FIRST SEARCH POINT", 20 , y - 20)
+        print("LAST SEARCH POINT", frame.shape[1] - 20, y + 20)
+        for i in range(frame.shape[1] - 40):
+            for j in range(40):
+                y_t = min(frame.shape[1] - 20, y + j - 20)
+                x_t = min(frame.shape[0] - 20 ,i + 20)
+                raw = self.original_frame[x_t, y_t] - frame[x_t, y_t]
+                if abs(round(raw/15)) > highest_z:
+                    highest_z = abs(round(raw/15))
+        print(highest_z)
+        return highest_z         
+    
+    def find_lowest_point(self,frame,x,y):
+        lowest_z = 0
+        for i in range(30):
+            for j in range(20):
+                y_t = min(frame.shape[0], y + i - 20)
+                x_t = min(frame.shape[1],x + j)
+                raw = self.original_frame[x_t, y_t] - frame[x_t, y_t]
+                if abs(round(raw/15)) < lowest_z:
+                    lowest_z = abs(round(raw/15))
+        print(lowest_z)
+        return lowest_z
     
     #--------------------------------------------------------------------------
     #                           Test Functions
     #--------------------------------------------------------------------------
+    def general_depth(self, ax, frame):   
+        coordinates = []
+        for i in range(len(frame)):
+            for j in range(len(frame[0])):
+                frame[i][j] = round((self.original_frame[i][j] - frame[i][j])/15)
+                if abs(frame[i][j]) > 1 and i > 20 and j > 20 and i < len(frame) - 20 and j < len(frame[0]) - 20:
+                    coordinates.append((i,j, frame[i][j]))
+        print("coordinates", coordinates)
     
     def find_depth(self, ax, frame):
         ''' function makes array of all depths of coordinates in coordinate system: 
@@ -573,7 +621,7 @@ class vlakvergelijking(ModuleTemplate):
             '''
         self.initialize_depth = False
         depth_array = []
-        
+        self.original_frame = frame
         border_x = frame.shape[1]
         border_y = frame.shape[0]
         for i in range(-5,6):
@@ -640,7 +688,7 @@ class vlakvergelijking(ModuleTemplate):
         if color_to_find == "red":
             for i in range(colors.shape[0]): # loop through all pixels
                 for j in range(colors.shape[1]):
-                    if colors[i][j][0] > colors[i][j][1] * 2 and colors[i][j][0] > colors[i][j][2] * 2: # if red/green/blue enough, add to list
+                     if colors[i][j][0] > colors[i][j][1] * 2 and colors[i][j][0] > colors[i][j][2] * 1.5: # if red/green/blue enough, add to list
                         points.append([i,j])
         if color_to_find == "blue":
             for i in range(colors.shape[0]): # loop through all pixels

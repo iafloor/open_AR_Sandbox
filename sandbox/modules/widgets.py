@@ -87,7 +87,8 @@ class widgets():
         self.NExercise = 5
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 5",
-                          self._widget_start)
+                          self._widget_start,
+                          self._widget_random_vector)
         return panel
 
     def widgets_exercise6(self):
