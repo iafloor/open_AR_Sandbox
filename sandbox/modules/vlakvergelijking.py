@@ -103,23 +103,25 @@ class vlakvergelijking(ModuleTemplate):
         if self.NExercise == 0:
             self.plot_tutorial(ax, colors, frame)
         elif self.NExercise == 1:
-            self.plot_exercise_1(ax, colors, frame)
+            self.plot_exercise_1_2_3(ax, colors, frame, self.exercises.exercise_1())
         elif self.NExercise == 2:
-            self.plot_exercise_2(ax, colors, frame)
+            self.plot_exercise_1_2_3(ax, colors, frame, self.exercises.exercise_2())
         elif self.NExercise == 3:
-            self.plot_exercise_3(ax, colors, frame)
+            self.plot_exercise_1_2_3(ax, colors, frame, self.exercises.exercise_3())
         elif self.NExercise == 4:
             self.plot_exercise_4(ax, colors, frame)
         elif self.NExercise == 5:
-            self.plot_exercise_5(ax, colors, frame)
+            self.plot_exercise_5_6_7(ax, colors, frame, self.exercises.exercise_5())
         elif self.NExercise == 6:
-            self.plot_exercise_6(ax, colors, frame)
+            self.plot_exercise_5_6_7(ax, colors, frame, self.exercises.exercise_6())
         elif self.NExercise == 7:
-            self.plot_exercise_7(ax)
+            self.plot_exercise_5_6_7(ax, colors, frame, self.exercises.exercise_7())
         elif self.NExercise == 8:
-            self.plot_exercise_8(ax)
+            self.plot_exercise_8(ax, colors, frame, self.exercises.exercise_8())
         elif self.NExercise == 9:
-            self.plot_exercise_9(ax)
+            self.plot_exercise_9(ax, colors, frame, self.exercises.exercise_9())
+        elif self.NExercise == 10:
+            self.plot_exercise_10(ax, colors, frame, self.exercises.exercise_10())
         else:
             self.plot_test(ax, colors)
         border_x = frame.shape[1]
@@ -148,18 +150,17 @@ class vlakvergelijking(ModuleTemplate):
                     linewidth=0.5)
             self.lines[i+ 39] =ax.annotate(-1 * i, (border_x / 2 + 2, border_y * (i + 4) / 8 - 5), color="gray",
                                           rotation=180)
-       # there is a bug here. I don't know exactly what it is. Commented it out for now
-       # self.lines[44] = ax.plot([border_y,0], [border_y / 2, border_y / 2], marker='o', color='black', linewidth=1)
-       # self.lines[45] = ax.plot([0, border_x], [border_x / 2, border_x / 2], marker='o', color='black', linewidth=1)
-
-
+        # there is a bug here. I don't know exactly what it is. Commented it out for now
+        # self.lines[44] = ax.plot([border_y,0], [border_y / 2, border_y / 2], marker='o', color='black', linewidth=1)
+        # self.lines[45] = ax.plot([0, border_x], [border_x / 2, border_x / 2], marker='o', color='black', linewidth=1)
+    def show_widgets():
+        pass
     #--------------------------------------------------------------------------
     #                               Exercises
     #--------------------------------------------------------------------------
     def plot_calibrate_color(self, ax, colors):
         pass
-    
-    
+        
     def plot_test(self, ax, colors):        
         # use code below when difficulties calibrating color sensor
         colorshex = [["" for i in range(colors.shape[1])] for j in range(colors.shape[0])]
@@ -171,6 +172,7 @@ class vlakvergelijking(ModuleTemplate):
         with open("bar.csv", 'w') as resultFile:
             wr = csv.writer(resultFile, dialect='excel', delimiter =';')
             wr.writerows(colorshex)
+
         ax.cla()    
         border = colors.shape[0]
         print("color shape", colors.shape)
@@ -213,21 +215,7 @@ class vlakvergelijking(ModuleTemplate):
             self.color = True
             self.contour = True
 
-    def plot_exercise_1(self, ax, colors, frame):
-        try:
-            self.description.remove()
-        except:
-            pass
-        if self.start:
-            ax.cla
-            self.color = False
-            self.contour = False
-            self.description = ax.annotate(self.exercises.exercise_1(),(40, 80), fontsize=28, color="black", rotation=180)
-        else:
-            self.color = True
-            self.contour = True
-
-    def plot_exercise_2(self, ax, colors, frame):
+    def plot_exercise_1_2_3(self, ax, colors, frame, question):
         ''' print 1 vector '''
         try:
             self.description.remove()
@@ -236,8 +224,8 @@ class vlakvergelijking(ModuleTemplate):
         if self.start:
             ax.cla()
             self.description = ax.annotate(
-                self.exercises.exercise_2(),
-                (40, 80), fontsize=28, color="black", rotation=180)
+                question,
+                (40, 60), fontsize=28, color="black", rotation=180)
         else:
             ax.cla()
             self.plot_axes(ax, frame.shape[1], frame.shape[0])
@@ -248,97 +236,18 @@ class vlakvergelijking(ModuleTemplate):
             border_y = colors.shape[0]
             border_x = colors.shape[1]
             
+            red = []
+            blue = []
             red = self.find_color(colors, 'red')
-            if len(red) == 2:
-                points = self.add_z(red, frame)
-                translated_points = self.translate(points, border_x, border_y)
-                self.calc_vec_equation(translated_points, points, ax, border_y, 0)
-            else:
-                pass
-
-    def plot_exercise_3(self, ax, colors, frame):
-        ''' print 2 vectoren'''
-        self.color = False
-        self.contour = False
-        try:
-            self.description.remove()
-        except:
-            pass
-        if self.start:
-            ax.cla()
-            self.description = ax.annotate(
-                self.exercises.exercise_3(),
-                (40, 80), fontsize=28, color="black", rotation=180)
-        else:
-            ax.cla()
-            self.plot_axes(ax, frame.shape[1], frame.shape[0])
-            # find two red points
-            # write vector 
-            ## print a random vector
-            border_y = colors.shape[0]
-            border_x = colors.shape[1]
-            
-            # Find red
-            red = self.find_color(colors, 'red')
-            if len(red) == 2:
-                points = self.add_z(red, frame)
-                translated_points = self.translate(points, border_x, border_y)
-                self.calc_vec_equation(translated_points, points, ax, border_y, 0)
-            else:
-                pass
-                
-            # Find blue
             blue = self.find_color(colors, 'blue')
-            if len(blue) == 2:
-                points = self.add_z(blue, frame)
+            if len(red) == 1 and len(blue) == 1:
+                points = self.alternative_add_z([red[0],blue[0]], frame)
                 translated_points = self.translate(points, border_x, border_y)
-                self.calc_vec_equation(translated_points, points, ax, border_y, 1)
+                self.calc_vec_equation(translated_points, points, ax, border_y, 1)              
             else:
                 pass
 
     def plot_exercise_4(self, ax, colors, frame):
-        ''' This exercise is redundant'''
-        self.color = False
-        self.contour = False
-        self.axes = True
-        try:
-            self.description.remove()
-        except:
-            pass
-        if self.start:
-            self.axes = False
-            self.description = ax.annotate(self.exercises.exercise_4(), (40, 80), fontsize=28, color="black", rotation=180)
-
-        ## print a random vector
-        border_y = colors.shape[0]
-        border_x = colors.shape[1]
-        if self.random_vector:
-            self.random_vector = False
-            a = [random.randint(-4,4), random.randint(-4,4)]
-            b = [random.randint(-4,4) , random.randint(-4,4)]
-            vec1 = [border_x - self.detranslate_x(a[0], border_x), border_y - self.detranslate_y(a[1], border_y)]
-            vec2 = [border_x - self.detranslate_x(b[0], border_x), border_y - self.detranslate_y(b[1], border_y)]
-            try:
-                v = self.vec.pop(0)
-                v.remove()
-            except:
-                pass
-            self.vec = ax.plot([vec1[0], vec2[0]],
-                           [vec1[1], vec2[1]], marker='o',
-                           color='red', linewidth=1)
-
-        ## print dynamic vector
-        ## find the vector indicated by two red tokens
-        if self.vector_equation:
-            try:
-                red = self.find_color(colors, 'red')
-                points = [red[0], red[1]]
-                translated_points = self.translate(points, border_x, border_y)
-                self.calc_vec_equation(translated_points, points, ax, border_y, dummy_vec)
-            except:
-                pass
-
-    def plot_exercise_5(self, ax, colors, frame):
         self.color = False
         self.contour = False
         try:
@@ -349,8 +258,8 @@ class vlakvergelijking(ModuleTemplate):
             ax.cla()
             self.axes = False
             self.description = ax.annotate(
-                self.exercises.exercise_5(),
-                (40, 80), fontsize=28, color="black", rotation=180)
+                self.exercises.exercise_4(),
+                (40, 60), fontsize=28, color="black", rotation=180)
         else:
             ## print a random vector
             border_y = colors.shape[0]
@@ -361,7 +270,7 @@ class vlakvergelijking(ModuleTemplate):
             
             if self.random_vector:
                 self.random_vector = False
-                self.dummy_vec = [random.randint(-2, 2), random.randint(-2, 2), 2]
+                self.dummy_vec = [random.randint(-2, 2), random.randint(-2, 2), random.randint(1, 3)]
             try:   
                 self.random_equation = ax.annotate("Create the vector: (" + str(self.dummy_vec[0]) + ", " + str(self.dummy_vec[1]) + ", " + str(self.dummy_vec[2]) + ")", (100, 5), color="#bf0707", fontsize=14, rotation=180)
             except:
@@ -376,10 +285,9 @@ class vlakvergelijking(ModuleTemplate):
                 translated_points = self.translate(points, border_x, border_y)
                 self.calc_vec_equation(translated_points, points, ax, border_y, 1)              
             else:
-                print("something went wrong", red, blue)
-            self.general_depth(ax, frame)
+                pass
 
-    def plot_exercise_6(self, ax, colors, frame):
+    def plot_exercise_5_6_7(self, ax, colors, frame, question):
         ''' Find plane equation.'''
         try:
             self.description.remove()
@@ -388,8 +296,82 @@ class vlakvergelijking(ModuleTemplate):
         if self.start:
             ax.cla()
             self.description = ax.annotate(
-                self.exercises.exercise_2(),
-                (40, 80), fontsize=28, color="black", rotation=180)
+                question,
+                (40, 60), fontsize=28, color="black", rotation=180)
+        else:
+            ax.cla()
+            self.plot_axes(ax, frame.shape[1], frame.shape[0])
+            
+            border_y = colors.shape[0]
+            border_x = colors.shape[1]
+            
+            # find two blue points and one red point
+            blue = self.find_color(colors, 'blue')
+            red = self.find_color(colors, 'red')
+            
+            if len(blue) == 2 and len(red) == 1:
+                # blue are high points, red a low point
+                points = [blue[0], blue[1], red[0]]
+                points[0].append(self.find_highest_point(frame, points[0][0],points[0][1]))
+                points[1].append(self.find_highest_point(frame, points[1][0],points[1][1]))
+                points[2].append(self.find_lowest_point(frame, points[2][0],points[2][1]))  
+                translated_points = self.translate(points, border_x, border_y)
+                eq = self.calc_plane_equation(translated_points, ax) 
+                self.plane_format_z(ax, eq, 1)
+                self.plane_format_d(ax, eq, True, 2)
+            else:
+                pass
+            
+    def plot_exercise_8(self, ax, colors, frame, question):
+        ''' Vector representation'''
+        try:
+            self.description.remove()
+        except:
+            pass
+        if self.start:
+            ax.cla()
+            self.description = ax.annotate(
+                question,
+                (40, 60), fontsize=28, color="black", rotation=180)
+        else:
+            ax.cla()
+            self.plot_axes(ax, frame.shape[1], frame.shape[0])
+            if self.random_vector:
+                self.random_vector = False
+                self.dummy_vec = [random.randint(-2, 2), random.randint(-2, 2), random.randint(1, 3)]
+                result = "Create the vector: t -> (" + str(random.randint(-2,2)) + ", " + str(random.randint(-2,2)) + ", 0) + "
+                self.result = result + "(" + str(self.dummy_vec[0]) + ", " + str(self.dummy_vec[1]) + ", " + str(self.dummy_vec[2]) + ")t"
+            try:   
+                self.random_equation = ax.annotate(self.result, (50, 10), color="#bf0707", fontsize=14, rotation=180)
+            except:
+                pass
+        
+            border_y = colors.shape[0]
+            border_x = colors.shape[1]
+            
+            # find red and blue point red points
+            red = []
+            blue = []
+            red = self.find_color(colors, 'red')
+            blue = self.find_color(colors, 'blue')
+            if len(red) == 1 and len(blue) == 1:
+                points = self.alternative_add_z([red[0],blue[0]], frame)
+                translated_points = self.translate(points, border_x, border_y)
+                self.calc_vec_representation(translated_points, points, ax, border_y, 2)              
+            else:
+                pass
+
+    def plot_exercise_9(self, ax, colors, frame, question):
+        ''' Find plane equation.'''
+        try:
+            self.description.remove()
+        except:
+            pass
+        if self.start:
+            ax.cla()
+            self.description = ax.annotate(
+                question,
+                (40, 60), fontsize=28, color="black", rotation=180)
         else:
             ax.cla()
             self.plot_axes(ax, frame.shape[1], frame.shape[0])
@@ -398,19 +380,25 @@ class vlakvergelijking(ModuleTemplate):
             border_x = colors.shape[1]
             
             
-            # find three red points
+            # find two blue points and one red point
+            blue = self.find_color(colors, 'blue')
             red = self.find_color(colors, 'red')
-            if len(red) == 3:
-                points = self.add_z(red, frame)
+            if len(blue) == 2 and len(red) == 1:
+                # blue are high points, red a low point
+                points = [blue[0], blue[1], red[0]]
+                points[0].append(self.find_highest_point(frame, points[0][0],points[0][1]))
+                points[1].append(self.find_highest_point(frame, points[1][0],points[1][1]))
+                points[2].append(self.find_lowest_point(frame, points[2][0],points[2][1]))  
                 translated_points = self.translate(points, border_x, border_y)
                 print(translated_points)
-                self.calc_plane_equation(translated_points, ax) 
+                eq = self.calc_plane_equation(translated_points, ax) 
+                self.plane_format_z(ax, eq, 1)
+                self.plane_format_d(ax, eq, True, 2)
             else:
-                print("did not find enough or too many points", len(red))
-            
-
-    def plot_exercise_7(self, ax):
-        ''' plane equation and vector'''
+                print("did not find enough or too many points", len(red), len(blue))
+     
+    def plot_exercise_10(self, ax, colors, frame, question): 
+        ''' Find plane equation.'''
         try:
             self.description.remove()
         except:
@@ -418,93 +406,39 @@ class vlakvergelijking(ModuleTemplate):
         if self.start:
             ax.cla()
             self.description = ax.annotate(
-                self.exercises.exercise_2(),
-                (40, 80), fontsize=28, color="black", rotation=180)
+                question,
+                (40, 60), fontsize=28, color="black", rotation=180)
         else:
             ax.cla()
             self.plot_axes(ax, frame.shape[1], frame.shape[0])
             
+            border_y = colors.shape[0]
+            border_x = colors.shape[1]
             
-            # find three red points
-
-    def plot_exercise_8(self, ax):
-        try:
-            self.description.remove()
-        except:
-            pass
-        if self.start:
-            self.color = False
-            self.contour = False
-            self.description = ax.annotate(
-                self.exercises.exercise_8(),
-                (40, 80), fontsize=28, color="black", rotation=180)
-        else:
-            self.color = True
-            self.contour = True
-
-    def plot_exercise_9(self, ax):
-        self.color = False
-        self.contour = False
-        try:
-            self.description.remove()
-        except:
-            pass
-        if self.start:
-            self.description = ax.annotate(
-                self.exercises.exercise_9(),
-                (40, 80), fontsize=28, color="black", rotation=180)
-        else:
-            if self.vector_equation:
-                try:
-                    red = self.find_color(colors, 'red')
-                    if lengt(red) == 2:
-                        translated_points = self.translate(red, border_x, border_y)
-                        self.calc_vec_equation(translated_points, points, ax, border_y, dummy_vec, 0)
-                    else:
-                        print("not enough or too many points found, number of points:" + length(red))
+            
+            # find two blue points and one red point
+            blue = self.find_color(colors, 'blue')
+            red = self.find_color(colors, 'red')
+            if len(blue) == 2 and len(red) == 1:
+                # blue are high points, red a low point
+                points = [blue[0], blue[1], red[0]]
+                points[0].append(self.find_highest_point(frame, points[0][0],points[0][1]))
+                points[1].append(self.find_highest_point(frame, points[1][0],points[1][1]))
+                points[2].append(self.find_lowest_point(frame, points[2][0],points[2][1]))  
+                translated_points = self.translate(points, border_x, border_y)
+                print(translated_points)
+                eq = self.calc_plane_equation(translated_points, ax) 
+                self.plane_format_z(ax, eq, 1)
+                self.plane_format_d(ax, eq, True, 2)
+                result = "Normal vector: (" + str(round(eq[0]*10)) + ", " + str(round(eq[1]*10))+ ", " + str(round(eq[2]*10)) + ")"
+                try: 
+                    e = self.vec_equation.pop(0)
+                    e.remove()
                 except:
                     pass
-                try:
-                    blue = self.find_color(colors, 'blue')
-                    if length(blue) == 2:
-                        translated_points = self.translate(blue, border_x, border_y)
-                        self.calc_vec_equation(translated_points, ax, border_y, dummy_vec, 1)
-                    else:
-                        print("not enough or too many points found, number of points:" + length(blue))
-                except:
-                    pass
-
-    def plot_exercise_10(self, ax):
-        self.color = False
-        self.contour = False
-        try:
-            self.description.remove()
-        except:
-            pass
-        if self.start:
-            self.description = ax.annotate(
-                self.exercises.exercise_9(),
-                (40, 80), fontsize=28, color="black", rotation=180)
-        else:
-            if self.vector_equation:
-                try:
-                    red = self.find_color(colors, 'red')
-                    if lengt(red) == 2:
-                        translated_points = self.translate(red, border_x, border_y)
-                        self.calc_vec_equation(translated_points, points, ax, border_y, dummy_vec, 0)
-                    else:
-                        print("not enough or too many points found, number of points:" + length(red))
-                except:
-                    pass
-                try:
-                    blue = self.find_color(colors, 'blue')
-                    if length(blue) == 2:
-                        translated_points = self.translate(blue, border_x, border_y)
-                        self.calc_vec_equation(translated_points, points, ax, border_y, dummy_vec, 1)
-                    else:
-                        print("not enough or too many points found, number of points:" + length(blue))
-                except:
-                    pass
+                self.vec_equation = ax.annotate(result, (25, 30), color="#bf0707", fontsize=14, rotation=180)
+            else:
+                pass       
 
     #--------------------------------------------------------------------------
     #                              Helper Functions
@@ -524,20 +458,6 @@ class vlakvergelijking(ModuleTemplate):
     def translate_z(self, z, total):
         return round(z * 8 / total - 4)
            
-    def alternative_translate_z(self, z,x,y):
-        '''idea: look at depth values around point (x,y)'''
-        
-        
-        for i in range(4):
-            for j in range(30):
-                pass
-        try:
-            initial_depth = self.depth_array[5 - x][y + 3]
-        except:
-            print("ids", 5 - x,(y + 3))
-            initial_depth = 0
-        return round((z - initial_depth)/15)
-
     def add_z(self, points, frame):
         ''' Add z variable to x,y pair'''
         for i in range(len(points)):
@@ -561,8 +481,6 @@ class vlakvergelijking(ModuleTemplate):
         
     def find_highest_point(self, frame, x, y):
         highest_z = 0
-        print("FIRST SEARCH POINT", 20 , y - 20)
-        print("LAST SEARCH POINT", frame.shape[1] - 20, y + 20)
         for i in range(frame.shape[1] - 40):
             for j in range(40):
                 y_t = min(frame.shape[1] - 20, y + j - 20)
@@ -570,21 +488,52 @@ class vlakvergelijking(ModuleTemplate):
                 raw = self.original_frame[x_t, y_t] - frame[x_t, y_t]
                 if abs(round(raw/15)) > highest_z:
                     highest_z = abs(round(raw/15))
-        print(highest_z)
         return highest_z         
     
     def find_lowest_point(self,frame,x,y):
         lowest_z = 0
-        for i in range(30):
-            for j in range(20):
-                y_t = min(frame.shape[0], y + i - 20)
-                x_t = min(frame.shape[1],x + j)
+        for i in range(frame.shape[1] - 40):
+            for j in range(40):
+                y_t = min(frame.shape[1] - 20, y + j - 20)
+                x_t = min(frame.shape[0] - 20 ,i + 20)
                 raw = self.original_frame[x_t, y_t] - frame[x_t, y_t]
                 if abs(round(raw/15)) < lowest_z:
                     lowest_z = abs(round(raw/15))
         print(lowest_z)
         return lowest_z
     
+    def find_color(self, colors, color_to_find):
+        ''' Currently, we first look for all red colored points (needs some tweeking when using an actual sandbox
+            then, we filter through the list and remove all points that are close to each oter (and just leave one
+            in the list. This may also need tweeking. Now, new points have to be at least 10 pixels away, this
+            could be changed'''
+
+        points = [] # list of all red points
+        key_points = []
+        if color_to_find == "red":
+            for i in range(colors.shape[0]): # loop through all pixels
+                for j in range(colors.shape[1]):
+                     if colors[i][j][0] > 200 and colors[i][j][1] < 100: # if red/green/blue enough, add to list
+                        points.append([i,j])
+        if color_to_find == "blue":
+            for i in range(colors.shape[0]): # loop through all pixels
+                for j in range(colors.shape[1]):
+                    if colors[i][j][2] > 200 and colors[i][j][0] < 100:
+                        points.append([i,j])
+        ## find key points
+        #  for i in points:
+        res = []
+        for i in points:
+            if i == []:
+                continue
+            for id, j in enumerate(points):
+                if i == j or i == [] or j == []:
+                   continue
+                else:
+                    if abs(i[0] - j[0]) < 15 and abs(i[1] - j[1]) < 15: # if closer to each other than 10 pixels, remove one
+                        points[id] = []
+            res = [ele for ele in points if ele != []]
+        return res
     #--------------------------------------------------------------------------
     #                           Test Functions
     #--------------------------------------------------------------------------
@@ -595,7 +544,6 @@ class vlakvergelijking(ModuleTemplate):
                 frame[i][j] = round((self.original_frame[i][j] - frame[i][j])/15)
                 if abs(frame[i][j]) > 1 and i > 20 and j > 20 and i < len(frame) - 20 and j < len(frame[0]) - 20:
                     coordinates.append((i,j, frame[i][j]))
-        print("coordinates", coordinates)
     
     def find_depth(self, ax, frame):
         ''' function makes array of all depths of coordinates in coordinate system: 
@@ -642,11 +590,108 @@ class vlakvergelijking(ModuleTemplate):
     #--------------------------------------------------------------------------
     #                           Randomizing
     #--------------------------------------------------------------------------
+     
+    def parameters_to_string(self, equation, roundup):
+        ''' Combine the parameters to one string to be printed'''
+        parameters = ["x ", "y ", "z ", " "]
+        id = 0
+        #if equation[id] == 0:
+        #    id = 1
+        result = str(round(equation[id] * 10)) + parameters[id]
 
-    def random_plane_parameters(self):
+        for i in range(id+1, 4):
+            if True: #equation[i] != 0:
+                if equation[i] < 0:
+                    result = result + "- "
+                else:
+                    result = result + "+ "
+                if roundup:
+                    result = result + str(abs(round(equation[i] * 10))) + parameters[i]
+                else:
+                    result = result + str(abs(round(equation[i] * 10,1))) + parameters[i]
+        result = result + "= 0"
+        return result
+    
+    #--------------------------------------------------------------------------
+    #                           vec / plane calculations
+    #--------------------------------------------------------------------------
+    
+    def calc_plane_equation(self, translated_points, ax):
+        ## find equation
+        n = np.cross(np.subtract(translated_points[0], translated_points[2]),
+                     np.subtract(translated_points[1], translated_points[2]))
+        norm = np.linalg.norm(n)
+        normal = n / norm
+        return Plane(point=translated_points[0].tolist(), normal=normal.tolist()).cartesian()        
+        
+    def plane_format_d(self,ax, equation, roundup, ind):
+        result = self.parameters_to_string(equation, roundup)
+        try:
+            self.equation.remove()
+        except:
+            pass
+        self.equation = ax.annotate("Equation:" + result, (100, 10*ind), color="#bf0707", fontsize=14, rotation=180)
+    
+    def plane_format_z(self, ax, equation, ind):
+        z_1_equation = [round(round(equation[0]*10)/round(equation[2]*10)), round(round(equation[1]*10)/round(equation[2]*10)), 1, round(round(equation[3]*10)/round(equation[2]*10))]
+        result = "z = " + str(z_1_equation[0]*-1) + "x +" + str(z_1_equation[1]*-1) + "y +" + str(z_1_equation[3]*-1)  
+        try:
+            self.equation_z.remove()
+        except:
+            pass
+        self.equation_z = ax.annotate("Equation:" + result, (100, 10*ind), color="#bf0707", fontsize=14, rotation=180)
+        
+    def calc_vec_equation(self, translated_points, points, ax, border_y, ind):
+        ## find vector representation
+        vec = translated_points[1] - translated_points[0]
+        result = "(" + str(vec[0]) + ", " + str(vec[1]) + ", " + str(vec[2]) + ")"
+        try: 
+            e = self.vec_equation.pop(0)
+            e.remove()
+        except:
+            pass
+        if False:
+            color="#09db3d"
+        else:
+            color="#bf0707"
+        self.vec_equation = ax.annotate("Vector:" + result, (25, 5 + ind*10), color=color, fontsize=14, rotation=180)
+        
+        ## print the vector
+        if ind == 0: 
+            try:
+                v = self.vec1.pop(0)
+                v.remove()
+            except:
+                pass        
+            self.vec1 = ax.plot([points[1][1], points[0][1]], [border_y - points[1][0], border_y - points[0][0]] , marker='o', color='red', linewidth=1)
+        if ind == 1:
+            try:
+                v = self.vec2.pop(0)
+                v.remove()
+            except:
+                pass
+            self.vec2 = ax.plot([points[1][1], points[0][1]], [border_y - points[1][0], border_y - points[0][0]] , marker='o', color='blue', linewidth=1)
+    
+    def calc_vec_representation(self, translated_points, points, ax, border_y, ind):
+        vec = translated_points[1] - translated_points[0]    
+        start = translated_points[0]
+        result = "Vector: t -> (" + str(start[0]) + ", " + str(start[1]) + ", " + str(start[2]) + ") + "
+        result = result + "(" + str(vec[0]) + ", " + str(vec[1]) + ", " + str(vec[2]) + ")t"
+        try: 
+            e = self.vec_rep.pop(0)
+            e.remove()
+        except:
+            pass
+        self.vec_rep = ax.annotate(result, (50, ind*10), color="#bf0707", fontsize=14, rotation=180)
+               
+    #--------------------------------------------------------------------------
+    #                           not in use
+    #--------------------------------------------------------------------------
+    
+    def random_plane_parameters(self): # not in use
         return [random.randint(-9,9)/10, random.randint(-9,9)/10, random.randint(-9,9)/10, random.randint(-9,9)/10]
 
-    def create_random_plane_equation(self, ax):
+    def create_random_plane_equation(self, ax): # not in use
         equation = self.random_plane_parameters()
         self.get_random_equation = False
         result = self.parameters_to_string(equation)
@@ -658,59 +703,8 @@ class vlakvergelijking(ModuleTemplate):
 
         ## print random equation
         self.random_equation = ax.annotate("Random equation:" + result, (10, 10), color="#bf0707", fontsize=14, rotation=180)
-
-    def parameters_to_string(self, equation):
-        ''' Combine the parameters to one string to be printed'''
-        parameters = ["x ", "y ", "z ", " "]
-        id = 0
-        if equation[id] == 0:
-            id = 1
-        result = str(round(equation[id] * 10)) + parameters[id]
-
-        for i in range(id+1, 4):
-            if equation[i] != 0:
-                if equation[i] < 0:
-                    result = result + "- "
-                else:
-                    result = result + "+ "
-                result = result + str(abs(round(equation[i] * 10,1))) + parameters[i]
-        result = result + "= 0"
-        return result
-    
-    def find_color(self, colors, color_to_find):
-        ''' Currently, we first look for all red colored points (needs some tweeking when using an actual sandbox
-            then, we filter through the list and remove all points that are close to each oter (and just leave one
-            in the list. This may also need tweeking. Now, new points have to be at least 10 pixels away, this
-            could be changed'''
-
-        points = [] # list of all red points
-        key_points = []
-        if color_to_find == "red":
-            for i in range(colors.shape[0]): # loop through all pixels
-                for j in range(colors.shape[1]):
-                     if colors[i][j][0] > colors[i][j][1] * 2 and colors[i][j][0] > colors[i][j][2] * 1.5: # if red/green/blue enough, add to list
-                        points.append([i,j])
-        if color_to_find == "blue":
-            for i in range(colors.shape[0]): # loop through all pixels
-                for j in range(colors.shape[1]):
-                    if colors[i][j][2] > 200 and colors[i][j][0] < 50 and colors[i][j][1] < 200:
-                        points.append([i,j])
-        ## find key points
-        #  for i in points:
-        res = []
-        for i in points:
-            if i == []:
-                continue
-            for id, j in enumerate(points):
-                if i == j or i == [] or j == []:
-                   continue
-                else:
-                    if abs(i[0] - j[0]) < 15 and abs(i[1] - j[1]) < 15: # if closer to each other than 10 pixels, remove one
-                        points[id] = []
-            res = [ele for ele in points if ele != []]
-        return res
-
-    def find_red(self, colors):
+  
+    def find_red(self, colors):  # not in use
         ''' Currently, we first look for all red colored points (needs some tweeking when using an actual sandbox
             then, we filter through the list and remove all points that are close to each oter (and just leave one
             in the list. This may also need tweeking. Now, new points have to be at least 10 pixels away, this
@@ -739,7 +733,7 @@ class vlakvergelijking(ModuleTemplate):
             res = [ele for ele in points if ele != []]
         return res
 
-    def show_red_points(self, border_y, ax):
+    def show_red_points(self, border_y, ax): # not in use
         ''' Show red points on the height map. To make sure we can use this function to show 1, 2 and 3 points. We just try and otherwise through an exception'''
         try:
             self.labelA.remove()
@@ -774,61 +768,145 @@ class vlakvergelijking(ModuleTemplate):
             self.pointC = ax.plot(self.red_points[2][1], border_y - self.red_points[2][0], marker='o', color='red', linewidth=1)   
         except:
             pass
-
-    def calc_plane_equation(self, translated_points, ax):
-        ## find equation
-        n = np.cross(np.subtract(translated_points[0], translated_points[2]),
-                     np.subtract(translated_points[1], translated_points[2]))
-        norm = np.linalg.norm(n)
-        normal = n / norm
-        equation = Plane(point=translated_points[0].tolist(), normal=normal.tolist()).cartesian()
-        result = self.parameters_to_string(equation)
+  
+    def plot_exercise_2(self, ax, colors, frame): # not in use
+        ''' print 1 vector '''
         try:
-            self.equation.remove()
+            self.description.remove()
         except:
             pass
-        self.equation = ax.annotate("Equation:" + result, (100, 10), color="#bf0707", fontsize=14, rotation=180)
-        
-        ## other format
-        equation = Plane(point=translated_points[0].tolist(), normal=normal.tolist()).cartesian()
-        z_1_equation = [round(round(equation[0]*10)/round(equation[2]*10),2), round(round(equation[1]*10)/round(equation[2]*10)), 1, round(round(equation[3]*10)/round(equation[2]*10))]
-        result = "z = " + str(z_1_equation[0]) + "x +" + str(z_1_equation[1]) + "y +" + str(z_1_equation[3])  
-        try:
-            self.alt_equation.remove()
-        except:
-            pass
-        self.alt_equation = ax.annotate("Equation:" + result, (100, 20), color="#bf0707", fontsize=14, rotation=180)
-        
-    def calc_vec_equation(self, translated_points, points, ax, border_y, ind):
-        ## find vector representation
-        vec = translated_points[1] - translated_points[0]
-        result = "(" + str(vec[0]) + ", " + str(vec[1]) + ", " + str(vec[2]) + ")"
-        try: 
-            e = self.vec_equation.pop(0)
-            e.remove()
-        except:
-            pass
-        if False:
-            color="#09db3d"
+        if self.start:
+            ax.cla()
+            self.description = ax.annotate(
+                self.exercises.exercise_2(),
+                (40, 80), fontsize=28, color="black", rotation=180)
         else:
-            color="#bf0707"
-        self.vec_equation = ax.annotate("Vector:" + result, (25, 5 + ind*10), color=color, fontsize=14, rotation=180)
-        
-        ## print the vector
-        if ind == 0: 
+            ax.cla()
+            self.plot_axes(ax, frame.shape[1], frame.shape[0])
+            
+            # find two red points
+            # write vector 
+            ## print a random vector
+            border_y = colors.shape[0]
+            border_x = colors.shape[1]
+            
+            red = self.find_color(colors, 'red')
+            if len(red) == 2:
+                points = self.add_z(red, frame)
+                translated_points = self.translate(points, border_x, border_y)
+                self.calc_vec_equation(translated_points, points, ax, border_y, 0)
+            else:
+                pass
+
+    def plot_exercise_3(self, ax, colors, frame): # not in use
+        ''' print 2 vectoren'''
+        self.color = False
+        self.contour = False
+        try:
+            self.description.remove()
+        except:
+            pass
+        if self.start:
+            ax.cla()
+            self.description = ax.annotate(
+                self.exercises.exercise_3(),
+                (40, 80), fontsize=28, color="black", rotation=180)
+        else:
+            ax.cla()
+            self.plot_axes(ax, frame.shape[1], frame.shape[0])
+            # find two red points
+            # write vector 
+            ## print a random vector
+            border_y = colors.shape[0]
+            border_x = colors.shape[1]
+            
+            # Find red
+            red = self.find_color(colors, 'red')
+            if len(red) == 2:
+                points = self.add_z(red, frame)
+                translated_points = self.translate(points, border_x, border_y)
+                self.calc_vec_equation(translated_points, points, ax, border_y, 0)
+            else:
+                pass
+                
+            # Find blue
+            blue = self.find_color(colors, 'blue')
+            if len(blue) == 2:
+                points = self.add_z(blue, frame)
+                translated_points = self.translate(points, border_x, border_y)
+                self.calc_vec_equation(translated_points, points, ax, border_y, 1)
+            else:
+                pass
+
+    def plot_exercise_5(self, ax, colors, frame): # not in use
+        ''' This exercise is redundant'''
+        self.color = False
+        self.contour = False
+        self.axes = True
+        try:
+            self.description.remove()
+        except:
+            pass
+        if self.start:
+            self.axes = False
+            self.description = ax.annotate(self.exercises.exercise_4(), (40, 80), fontsize=28, color="black", rotation=180)
+
+        ## print a random vector
+        border_y = colors.shape[0]
+        border_x = colors.shape[1]
+        if self.random_vector:
+            self.random_vector = False
+            a = [random.randint(-4,4), random.randint(-4,4)]
+            b = [random.randint(-4,4) , random.randint(-4,4)]
+            vec1 = [border_x - self.detranslate_x(a[0], border_x), border_y - self.detranslate_y(a[1], border_y)]
+            vec2 = [border_x - self.detranslate_x(b[0], border_x), border_y - self.detranslate_y(b[1], border_y)]
             try:
-                v = self.vec1.pop(0)
-                v.remove()
-            except:
-                pass        
-            self.vec1 = ax.plot([points[1][1], points[0][1]], [border_y - points[1][0], border_y - points[0][0]] , marker='o', color='red', linewidth=1)
-        if ind == 1:
-            try:
-                v = self.vec2.pop(0)
+                v = self.vec.pop(0)
                 v.remove()
             except:
                 pass
-            self.vec2 = ax.plot([points[1][1], points[0][1]], [border_y - points[1][0], border_y - points[0][0]] , marker='o', color='blue', linewidth=1)
-    
-    def show_widgets(self):
-        pass
+            self.vec = ax.plot([vec1[0], vec2[0]],
+                           [vec1[1], vec2[1]], marker='o',
+                           color='red', linewidth=1)
+
+        ## print dynamic vector
+        ## find the vector indicated by two red tokens
+        if self.vector_equation:
+            try:
+                red = self.find_color(colors, 'red')
+                points = [red[0], red[1]]
+                translated_points = self.translate(points, border_x, border_y)
+                self.calc_vec_equation(translated_points, points, ax, border_y, dummy_vec)
+            except:
+                pass
+
+    def plot_exercise_11(self, ax): # not in use
+        try:
+            self.description.remove()
+        except:
+            pass
+        if self.start:
+            self.color = False
+            self.contour = False
+            self.description = ax.annotate(
+                self.exercises.exercise_8(),
+                (40, 80), fontsize=28, color="black", rotation=180)
+        else:
+            self.color = True
+            self.contour = True
+ 
+    def alternative_translate_z(self, z,x,y):
+        '''idea: look at depth values around point (x,y)'''
+        
+        
+        for i in range(4):
+            for j in range(30):
+                pass
+        try:
+            initial_depth = self.depth_array[5 - x][y + 3]
+        except:
+            print("ids", 5 - x,(y + 3))
+            initial_depth = 0
+        return round((z - initial_depth)/15)
+
+ 
