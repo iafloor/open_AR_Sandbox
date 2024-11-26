@@ -86,21 +86,24 @@ class widgets():
         self.NExercise = 5
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 5",
-                          self._widget_start)
+                          self._widget_start,
+                          self._widget_random_vector)
         return panel
 
     def widgets_exercise6(self):
         self.NExercise = 6
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 6",
-                          self._widget_start)
+                          self._widget_start,
+                          self._widget_random_vector)
         return panel
 
     def widgets_exercise7(self):
         self.NExercise = 7
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 7",
-                          self._widget_start)
+                          self._widget_start,
+                          self._widget_random_vector)
         return panel
 
     def widgets_exercise8(self):
@@ -115,7 +118,8 @@ class widgets():
         self.NExercise = 9
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 9",
-                          self._widget_start)
+                          self._widget_start,
+                          self._widget_random_vector)
         return panel
         
     def widgets_exercise10(self):
