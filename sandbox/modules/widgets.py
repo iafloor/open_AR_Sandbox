@@ -64,54 +64,52 @@ class widgets():
         self.start = True
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 2",
-                          self._widget_start)
+                          self._widget_start,
+                          self._widget_random_vector)
         return panel
 
     def widgets_exercise3(self):
         self.NExercise = 3
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 3",
-                          self._widget_start)
+                          self._widget_start,
+                          self._widget_random_vector)
         return panel
 
     def widgets_exercise4(self):
         self.NExercise = 4
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 4",
-                          self._widget_start,
-                          self._widget_random_vector)
+                          self._widget_start
+                          )
         return panel
 
     def widgets_exercise5(self):
         self.NExercise = 5
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 5",
-                          self._widget_start,
-                          self._widget_random_vector)
+                          self._widget_start)
         return panel
 
     def widgets_exercise6(self):
         self.NExercise = 6
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 6",
-                          self._widget_start,
-                          self._widget_random_vector)
+                          self._widget_start)
         return panel
 
     def widgets_exercise7(self):
         self.NExercise = 7
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 7",
-                          self._widget_start,
-                          self._widget_random_vector)
+                          self._widget_start)
         return panel
 
     def widgets_exercise8(self):
         self.NExercise = 8
         self._create_widgets()
         panel = pn.Column("### Widgets for exercise 8",
-                          self._widget_start,
-                          self._widget_random_vector)
+                          self._widget_start)
         return panel
 
     def widgets_exercise9(self):

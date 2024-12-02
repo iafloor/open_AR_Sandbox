@@ -6,8 +6,8 @@ class exercises():
     def tutorial(self):
         return "This is the tutorial. \n You can remove and show this \n message by using the checkbox \n in jupyter notebook. Use this \n tutorial to get familiar with the \n sandbox."
     
-    def opdracht_1a(self):
-        return "1a. Plaats de vector zo in de zandbak dat het kental voor de z 0 is."
+    def opdracht_1(self):
+        return "1. Plaats de vector in de zandbak. \n Kan je vectoren vinden met \n interessante kengetallen?"
     
     def opdracht_1b(self):
         return "1b. Plaats de vector zo in de zandbak dat het kental voor de x 0 is."
@@ -16,28 +16,30 @@ class exercises():
         return "1c. Plaats de vector zo in de zandbak dat het kental voor de y 0 is."
     
     def opdracht_2(self):
-        return "2. Boven in de zandbak staan de kentallen van een vector. Maak deze vector na."
+        return "2. Boven in de zandbak staan \n de kengetallen van een vector. \n Maak deze vector na."
     
     def opdracht_3a(self):
-        return "3a. Boven in de zandbak staat een vector voorstelling. Maak de vector voorstelling na."
+        return "3a. Boven in de zandbak staat \n een vectorvoorstelling. \n Maak het lijnstuk dat de \n vectorvoorstelling beschrijft, \n waarbij de parameter t \n van 0 tot 1 loopt."
     
     def opdracht_3b(self):
-        return "3b. Boven in de zandbak staan twee vector voorstellingen. Wat zijn verschillen en wat zijn overeenkomsten?"
+        return "3b. Boven in de zandbak staan \n twee vectorvoorstellingen. \n Onderzoek wat de verschillen en \n overeenkomsten zijn tussen \n de lijnstukken die worden \n gegeven als de parameters \n t1 en t2 van 0 tot 1 lopen."
     
     def opdracht_4a(self):
-        return "4a. Gegeven is een vector. Maak een vector die loodrecht staat op deze vector."
+        return "4a. Maak een vector \n voorstelling van een lijn \n die de gegeven lijn snijdt."
     
     def opdracht_4b(self):
-        return "4b. Gegeven is een vector. Maak een vector zodat het inproduct tussen deze twee vectoren 0 is."
-    
-    def opdracht_5a(self):
-        return "5a. Maak twee vector voorstellingen van lijnen die elkaar kruisen."
-    
-    def opdracht_5b(self):
-        return "5b. Maak twee vector voorstellingen van lijnen die elkaar snijden."
+        return "4b. Verplaats de \n vector nu zodat het vanaf \n sommige aanzichten lijkt alsof \n de lijnen elkaar snijden, \n maar ze dat niet doen."
         
-    def opdracht_5c(self):
-        return "5c. Maak twee vector voorstellingen van lijnen die parallel zijn aan elkaar."
+    def opdracht_4c(self):
+        return "4c.Maak een vector \n voorstelling van een lijn \n die parallel is aan de gegeven \n lijn."
+        
+    def opdracht_5(self):
+        return "5. Gegeven is het vlak \n y = -3. Onderzoek hoe je \n een vectorvoorstelling kan \n maken die dit vlak snijdt."
+    
+    def opdracht_6(self):
+        return "6. Onderzoek wat er \n gebeurt met het inproduct \n als de hoek tussen \n vectoren veranderd."
+    
+   
     
     
     
